@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>서울 히스토리맵, 1919년 3월 그날의 발자취</title>
+
+    <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <link rel="stylesheet" href="./css/index.css" />
+</head>
+
+<body class="global-body">
+    <nav class="global-dot-nav">
+        <button class="global-dot" data-target-section="0" aria-label="section0"></button>
+        <button class="global-dot" data-target-section="1" aria-label="section1"></button>
+        <button class="global-dot" data-target-section="2" aria-label="section2"></button>
+        <button class="global-dot" data-target-section="3" aria-label="section3"></button>
+        <button class="global-dot" data-target-section="4" aria-label="section4"></button>
+        <button class="global-dot" data-target-section="5" aria-label="section5"></button>
+        <button class="global-dot" data-target-section="6" aria-label="section6"></button>
+    </nav>
+
+    <section data-section="0" class="story-section scroll-section" id="section-0">
+        <div class="sc0-hero-texture" aria-hidden="true"></div>
+        <div class="sc0-hero-ring" aria-hidden="true"></div>
+
+        <div class="sc0-hero-content">
+            <p class="sc0-hero-date">MARCH 1, 1919</p>
+            <h1 class="sc0-hero-title">
+                <span class="ko-text"><strong>3</strong>.<strong>1</strong>운동</span>
+            </h1>
+            <p class="sc0-hero-desc ko-text">
+                세상을 깨운 1919년 3월의 뜨거운 외침.<br>
+                태극기가 물결치기 전, 서울 곳곳에 은밀하게 새겨진 그날의 결의와 발자취를 지도 위에서 되짚어본다.
+            </p>
+        </div>
+
+        <button type="button" class="sc0-scroll-cue"
+            onclick="document.querySelector('#section-1').scrollIntoView({behavior:'smooth'})">Scroll</button>
+    </section>
+
+
+    <section data-section="1" class="story-section scroll-section" id="section-1">
+        <header class="story-header sc1-intro-header">
+            <div class="story-header-bg"></div>
+            <div class="story-overlay story-overlay-header"></div>
+            <div class="story-header-content">
+                <div class="story-chapter-group">
+                    <span class="story-chapter-num">01</span>
+                    <div class="story-divider"></div>
+                    <span class="story-chapter-subtitle">시대의 부름</span>
+                </div>
+                <h1 class="story-title">빼앗긴 들에 독립의 불씨가 움트다</h1>
+                <p class="story-desc">일제의 가혹한 억압 속에서도, 조국의 빛을 되찾기 위한 열망은 민중의 가슴 깊은 곳에서 조용히 타오르고 있었다.</p>
+            </div>
+        </header>
+        <div class="sc1-split-layout">
+            <div class="sc1-split-text">
+                <div class="sc1-chapter-num">01</div>
+                <p class="sc1-section-label sc1-reveal">배경 · BACKGROUND</p>
+                <h2 class="sc1-section-heading-ko sc1-reveal">일제강점기의<br />통치 구조</h2>
+                <p class="sc1-section-heading-en sc1-reveal">Colonial Rule, 1910 - 1919</p>
+
+                <div class="sc1-divider sc1-reveal">
+                    <div class="sc1-divider-line"></div>
+                    <div class="sc1-divider-diamond"></div>
+                    <div class="sc1-divider-line"></div>
+                </div>
+
+                <div class="sc1-section-body sc1-reveal">
+                    <p class="ko-text sc1-desc-text">
+                        1910년 한일병합조약으로 조선은 일제에 강제 합병되었다.
+                        조선총독부는 헌병경찰제도를 운영하며 언론·출판·집회를 금지했고, 재판 없이 즉결처분을 집행하는 등 가혹한 무단 통치를 이어갔다.
+                    </p>
+                </div>
+            </div>
+            <div class="sc1-split-visual">
+                <div class="sc1-map-container" id="map-s1-1"></div>
+            </div>
+        </div>
+
+        <div class="sc1-split-layout reverse">
+            <div class="sc1-split-text">
+                <div class="sc1-chapter-num">02</div>
+                <p class="sc1-section-label sc1-reveal">기폭제 · CATALYST</p>
+                <h2 class="sc1-section-heading-ko sc1-reveal">고종 황제 붕어와<br />민중의 분노</h2>
+                <p class="sc1-section-heading-en sc1-reveal">Death of Emperor Gojong, 1919</p>
+
+                <div class="sc1-divider sc1-reveal">
+                    <div class="sc1-divider-line"></div>
+                    <div class="sc1-divider-diamond"></div>
+                    <div class="sc1-divider-line"></div>
+                </div>
+
+                <div class="sc1-section-body sc1-reveal">
+                    <p class="ko-text sc1-desc-text">
+                        1919년 1월, 고종 황제가 덕수궁에서 갑작스럽게 세상을 떠났다.
+                        일제에 의한 독살 의혹이 빠르게 퍼지며 슬픔에 빠진 민중들의 분노는 거대한 독립운동이 조직화되는 결정적인 도화선이 되었다.
+                    </p>
+                </div>
+            </div>
+            <div class="sc1-split-visual">
+                <div class="sc1-map-container" id="map-s1-2"></div>
+            </div>
+        </div>
+
+        <div class="sc1-split-layout">
+            <div class="sc1-split-text">
+                <div class="sc1-chapter-num">03</div>
+                <p class="sc1-section-label sc1-reveal">희망 · HOPE</p>
+                <h2 class="sc1-section-heading-ko sc1-reveal">세계를 향한 외침,<br />민족자결주의</h2>
+                <p class="sc1-section-heading-en sc1-reveal">Paris Peace Conference, 1919</p>
+
+                <div class="sc1-divider sc1-reveal">
+                    <div class="sc1-divider-line"></div>
+                    <div class="sc1-divider-diamond"></div>
+                    <div class="sc1-divider-line"></div>
+                </div>
+
+                <div class="sc1-section-body sc1-reveal">
+                    <p class="ko-text sc1-desc-text sc1-margin-b">
+                        제1차 세계대전 직후 열린 파리 강화회의에서 미국 우드로 윌슨 대통령이 '민족자결주의'를 제창했다. 이는 식민 지배에 신음하던 우리 민족에게 독립에 대한 흔들리지 않는
+                        희망과 명분을 제공했다.
+                    </p>
+
+                    <div class="sc1-quote-box">
+                        <p class="sc1-quote-ko">"각 민족은 스스로의 운명을 결정할 권리가 있다" — 우드로 윌슨, 1918</p>
+                        <p class="sc1-quote-en">"Every people has the right to determine its own destiny" — Woodrow
+                            Wilson, 1918</p>
+                    </div>
+                </div>
+            </div>
+            <div class="sc1-split-visual">
+                <div class="sc1-map-container" id="map-s1-3"></div>
+            </div>
+        </div>
+
+        <div class="sc1-split-layout reverse">
+            <div class="sc1-split-text">
+                <div class="sc1-chapter-num">04</div>
+                <p class="sc1-section-label sc1-reveal">결의 · RESOLVE</p>
+                <h2 class="sc1-section-heading-ko sc1-reveal">적의 심장부에서<br />독립을 선언하다</h2>
+                <p class="sc1-section-heading-en sc1-reveal">February 8th Declaration, 1919</p>
+
+                <div class="sc1-divider sc1-reveal">
+                    <div class="sc1-divider-line"></div>
+                    <div class="sc1-divider-diamond"></div>
+                    <div class="sc1-divider-line"></div>
+                </div>
+
+                <div class="sc1-section-body sc1-reveal">
+                    <p class="ko-text sc1-desc-text">
+                        파리강화회의 소식에 고무된 일본 도쿄의 조선 유학생들은 YMCA 회관에 모여 '조선청년독립단'을 결성하고 2·8 독립선언서를 낭독했다.
+                        이들의 꺾이지 않는 투지는 국내 동포들을 일깨우며 3·1운동의 직접적인 전초전이 되었다.
+                    </p>
+                </div>
+            </div>
+            <div class="sc1-split-visual">
+                <div class="sc1-map-container" id="map-s1-4"></div>
+            </div>
+        </div>
+    </section>
+
+    <section data-section="2" class="story-section scroll-section" id="section-2">
+        <header class="story-header">
+            <div class="story-header-bg"></div>
+            <div class="story-overlay story-overlay-header"></div>
+            <div class="story-header-content">
+                <div class="story-chapter-group">
+                    <span class="story-chapter-num">02</span>
+                    <div class="story-divider"></div>
+                    <span class="story-chapter-subtitle">거사의 맹세</span>
+                </div>
+                <h1 class="story-title">세상을 깨울 함성을 준비하다.</h1>
+                <p class="story-desc">역사를 바꾼 그날의 외침 뒤에는, 가장 어두운 밤을 지새운 숭고한 계획이 있었다.</p>
+            </div>
+        </header>
+
+        <div class="sc2-content-wrap">
+            <div class="sc2-map-pane">
+                <div class="sc2-map-inner" id="map-s2"></div>
+                <div class="sc2-map-shadow"></div>
+            </div>
+            <div class="sc2-timeline-pane" id="sc2-timeline-container">
+                <div class="sc2-timeline-list" id="sc2-timeline-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <section data-section="3" class="story-section scroll-section" id="section-3">
+        <header class="story-header">
+            <div class="story-header-bg"></div>
+            <div class="story-overlay story-overlay-header"></div>
+            <div class="story-header-content">
+                <div class="story-chapter-group">
+                    <span class="story-chapter-num">03</span>
+                    <div class="story-divider"></div>
+                    <span class="story-chapter-subtitle">함성의 궤적</span>
+                </div>
+                <h1 class="story-title">두려움을 넘어선 발걸음, 거리를 덮다.</h1>
+                <p class="story-desc">탑골공원에서 피어오른 태극기의 물결은 이내 거대한 파도가 되어 서울의 모든 길목으로 뻗어나갔다.</p>
+            </div>
+        </header>
+
+        <div class="sc3-content-wrap">
+            <div class="sc3-map-pane">
+                <div class="sc3-map-inner" id="map-s3"></div>
+                <div class="sc3-map-shadow"></div>
+            </div>
+            <div class="sc3-timeline-pane" id="sc3-timeline-container">
+                <div class="sc3-timeline-list" id="sc3-timeline-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <section data-section="4" class="story-section scroll-section" id="section-4">
+        <header class="story-header sc4-header">
+            <div class="story-header-bg"></div>
+            <div class="story-overlay story-overlay-header"></div>
+            <div class="story-header-content">
+                <div class="story-chapter-group">
+                    <span class="story-chapter-num">04</span>
+                    <div class="story-divider"></div>
+                    <span class="story-chapter-subtitle">역사의 현장</span>
+                </div>
+                <h1 class="story-title">피와 눈물로 새겨진 기억의 공간들</h1>
+                <p class="story-desc">남녀노소, 신분과 종교를 넘어 오직 '대한독립' 하나로 뭉쳤던 뜨거운 그날의 무대를 되짚어본다.</p>
+            </div>
+        </header>
+
+        <div class="sc4-intro-view">
+            <div class="sc4-intro-content sc4-reveal">
+                <h2 class="sc4-intro-title">
+                    <span class="ko-text">저항의 물결, 만세의 확산</span>
+                </h2>
+
+                <hr class="sc4-intro-divider">
+
+                <div class="sc4-intro-cols">
+                    <div class="sc4-col">
+                        <h3 class="sc4-col-title">
+                            <span class="ko-text">핵심 거점 (Strategic Hubs)</span>
+                        </h3>
+                        <p class="sc4-col-desc ko-text">
+                            독립운동의 숨은 심장과도 같은 곳입니다. 태화관이나 보성사와 같은 장소들은 극비리에 독립선언서를 기안하고, 인쇄하며, 전국으로 배포하기 위한 준비의 거점이었습니다.
+                        </p>
+                    </div>
+
+                    <div class="sc4-col">
+                        <h3 class="sc4-col-title">
+                            <span class="ko-text">시위 현장 (Protest Sites)</span>
+                        </h3>
+                        <p class="sc4-col-desc ko-text">
+                            대중적 저항이 폭발한 역사의 무대입니다. 남대문 정거장과 공덕리 등은 학생, 상인, 노동자 등 다양한 군중이 모여 반도 전역에 '만세'의 함성을 울려 퍼지게 한
+                            항쟁의 중심지였습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sc4-map-view">
+            <div id="map-s4" class="sc4-map-container"></div>
+
+            <div class="sc4-legend sc4-reveal">
+                <h4 class="sc4-legend-title">지도 범례</h4>
+                <ul class="sc4-legend-list">
+                    <li>
+                        <div class="sc4-legend-dot hub-dot"></div>
+                        <div class="sc4-legend-text">
+                            <strong>중요 지점</strong>
+                            <span>거사 기획 및 준비 거점</span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sc4-legend-dot site-dot"></div>
+                        <div class="sc4-legend-text">
+                            <strong>시위 장소</strong>
+                            <span>대규모 만세 시위 전개지</span>
+                        </div>
+                    </li>
+                </ul>
+                <div class="sc4-legend-footer">3·1운동 디지털 역사 지도</div>
+            </div>
+        </div>
+    </section>
+
+    <section data-section="5" class="story-section scroll-section" id="section-5">
+        <header class="story-header sc5-header">
+            <div class="story-header-bg"></div>
+            <div class="story-overlay story-overlay-header"></div>
+            <div class="story-header-content">
+                <div class="story-chapter-group">
+                    <span class="story-chapter-num">05</span>
+                    <div class="story-divider"></div>
+                    <span class="story-chapter-subtitle">독립의 별들</span>
+                </div>
+                <h1 class="story-title">어둠을 가르고 스스로 빛이 된 사람들</h1>
+                <p class="story-desc">역사에 굵게 새겨진 이름들과 기록되지 못한 무명의 헌신들. 각자의 자리에서 조국을 지켜낸 영웅들을 기억한다.</p>
+            </div>
+        </header>
+
+        <div class="sc5-map-view">
+            <div id="map-s5" class="sc5-map-container"></div>
+
+            <div class="sc5-carousel-wrapper sc5-reveal">
+                <button class="sc5-nav-btn prev" id="sc5-btn-prev">
+                    <span class="material-symbols-outlined">⬅</span>
+                </button>
+
+                <div class="sc5-carousel-track no-scrollbar" id="sc5-activist-list"></div>
+
+                <button class="sc5-nav-btn next" id="sc5-btn-next">
+                    <span class="material-symbols-outlined">➡</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section data-section="6" class="story-section scroll-section" id="section-6">
+        <header class="story-header">
+            <div class="story-header-bg"></div>
+            <div class="story-overlay story-overlay-header"></div>
+            <div class="story-header-content">
+                <div class="story-chapter-group">
+                    <span class="story-chapter-num">06</span>
+                    <div class="story-divider"></div>
+                    <span class="story-chapter-subtitle">남겨진 유산</span>
+                </div>
+                <h1 class="story-title">끝이 아닌, 거대한 역사의 시작</h1>
+                <p class="story-desc">3월의 울림은 당장의 광복을 안겨주진 못했으나, 대한민국 임시정부의 뿌리가 되어 변치 않는 이정표로 남았다.</p>
+            </div>
+        </header>
+
+        <div class="sc6-content-wrap">
+            <div class="sc6-inner-container">
+                <div class="sc6-card-grid">
+                    <div class="sc6-card sc6-reveal">
+                        <span class="sc6-card-num">01</span>
+                        <h3 class="sc6-card-title">대한민국 임시정부 수립</h3>
+                        <p class="sc6-card-desc">민족의 역량을 하나로 결집하여 상하이 임시정부를 수립하는 직접적인 계기가 되었습니다.</p>
+                        <p class="sc6-card-en">Establishment of the Provisional Government</p>
+                    </div>
+
+                    <div class="sc6-card sc6-reveal">
+                        <span class="sc6-card-num">02</span>
+                        <h3 class="sc6-card-title">일제 통치 방식의 변화</h3>
+                        <p class="sc6-card-desc">무단통치에서 문화통치로의 전환을 이끌어내며 일제 식민 지배 체제에 균열을 냈습니다.</p>
+                        <p class="sc6-card-en">Shift in Japanese Colonial Policy</p>
+                    </div>
+
+                    <div class="sc6-card sc6-reveal">
+                        <span class="sc6-card-num">03</span>
+                        <h3 class="sc6-card-title">전 세계 평화의 불꽃</h3>
+                        <p class="sc6-card-desc">중국의 5·4 운동과 인도의 저항 운동 등 아시아 독립운동에 거대한 영감을 주었습니다.</p>
+                        <p class="sc6-card-en">Inspiration for Global Independence</p>
+                    </div>
+                </div>
+
+                <div class="sc6-quote-section sc6-reveal">
+                    <div class="sc6-quote-box">
+                        <div class="sc6-quote-bg-num">1919</div>
+
+                        <p class="sc6-quote-main">"대한민국 헌법 전문은 '3·1운동으로 건립된 대한민국 임시정부의 법통'을<br>계승함을 명시하고 있습니다."</p>
+                        <p class="sc6-quote-sub">오늘날 우리 민주주의의 뿌리는 바로 그날의 만세 소리에 있습니다.</p>
+                        <div class="sc6-quote-footer">SMART SEOUL MAP STORY MAP © 2026</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <h2 class="footer-logo">3·1운동 <span>디지털 역사 지도</span></h2>
+            </div>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <div class="footer-info">
+                    <p>본 사이트는 1919년 3·1운동의 역사적 발자취를 기억하고 기록하기 위해 제작되었습니다.</p>
+                    <p class="footer-source">자료 출처: 독립기념관 국내항일운동사적지, 오픈스트리트맵(OSM), 스마트서울맵API</p>
+                </div>
+
+                <div class="footer-copyright">
+                    &copy; 2026 National Independence Archive.<br>All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button class="floating-top-btn" id="backToTopBtn">
+        <span class="material-symbols-outlined">TOP</span>
+    </button>
+
+    <script src="api/config.js"></script>
+    <script src="api/mapService.js"></script>
+    <script type="module" src="js/index.js"></script>
+</body>
+
+</html>
