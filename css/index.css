@@ -31,6 +31,16 @@ body,
     scroll-behavior: smooth;
 }
 
+/* 모든 리플렛 지도의 기본 회색 배경을 투명으로 변경 */
+.leaflet-container {
+    background: transparent !important;
+}
+
+/* 타일 이미지가 덜 로드되었을 때 나타나는 회색 타일 방지 */
+.leaflet-tile {
+    background-color: transparent !important;
+}
+
 /* =========================================
    [공통 스타일] 전체 섹션 및 헤더 영역
 ========================================= */
@@ -876,11 +886,11 @@ body,
 }
 
 .sc3-map-pane {
+    position: sticky;
     grid-column: 1;
     grid-row: 1;
     width: 100%;
     height: 100vh;
-    position: sticky;
     top: 0;
     background-color: #0e0e0e;
     z-index: 1;
@@ -1048,6 +1058,29 @@ body,
 .sc3-point-marker.start .sc3-point-label,
 .sc3-point-marker.end .sc3-point-label {
     color: #ffffff;
+}
+
+#map-s3 {
+    width: 100%;
+    height: 100vh;
+    /* 화면 전체 높이로 고정 */
+    position: relative;
+    background-color: #e0e0e0;
+    /* 지도 로딩 전 배경색 */
+    display: block !important;
+    /* 지도가 사라지지 않게 강제 표시 */
+}
+
+/* 🚨 섹션 3의 지도 경로 내부를 강제로 투명하게 만듭니다 */
+#map-s3 path.sc3-draw-path {
+    fill: none !important;
+    fill-opacity: 0 !important;
+    background-color: transparent !important;
+}
+
+/* 지도 전체 컨테이너 배경도 투명하게 강제 */
+#map-s3 .leaflet-container {
+    background: transparent !important;
 }
 
 @media (max-width: 767px) {

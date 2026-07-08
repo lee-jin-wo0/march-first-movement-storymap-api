@@ -38,6 +38,8 @@ function loadSeoulMapAPI() {
     });
 }
 
+
+
 /* =======================================================
    2. 전역 스크롤 및 UI 컨트롤 (기존 index.js)
 ======================================================= */
@@ -220,6 +222,11 @@ async function initSection2() {
     const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
     new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 1, maxZoom: 15 }).addTo(mapS2);
 
+    const resizeObserverS2 = new ResizeObserver(() => {
+        mapS2.invalidateSize();
+    });
+    resizeObserverS2.observe(mapContainer);
+
     const pathLine = L.polyline([], {
         color: '#000000', weight: 3, dashArray: '8, 8', opacity: 1, lineJoin: 'round'
     }).addTo(mapS2);
@@ -372,16 +379,21 @@ async function initSection3() {
     const mapContainer = document.getElementById('map-s3');
     if (!mapContainer) return;
 
-    // 💡 1. 서울시 전용 좌표계 적용
+    // 1. 지도 생성
     const mapS3 = L.map('map-s3', {
         zoomControl: false,
         scrollWheelZoom: false,
         crs: getCrsEx()
-    }).setView([37.5665, 126.9780 - 0.01], 10); // 줌 레벨 낮춤
+    }).setView([37.5665, 126.9780], 9);
 
-    // 💡 2. 서울맵 V5 타일 적용
+    // 2. 타일 로딩 (여기까지만 수행해도 고정된 높이 덕분에 지도가 바로 뜹니다)
     const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
-    new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 1, maxZoom: 15 }).addTo(mapS3);
+    new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 9, maxZoom: 9 }).addTo(mapS3);
+
+    // 3. 마지막으로 딱 한 번만 크기 갱신
+    setTimeout(() => {
+        mapS3.invalidateSize();
+    }, 500);
 
     let activeGeoJsonLayer = null;
     let activeMarkers = [];
@@ -439,6 +451,8 @@ async function initSection3() {
                     activeMarkers = [];
 
                     if (targetFeature) {
+                        mapS3.invalidateSize();
+
                         const tempLayer = L.geoJSON(targetFeature);
                         mapS3.invalidateSize();
                         const isMobile = window.innerWidth <= 768;
@@ -476,8 +490,7 @@ async function initSection3() {
                                     opacity: 0.9,
                                     lineJoin: 'round',
                                     className: 'sc3-draw-path',
-                                    fillColor: 'transparent', // 👈 [핵심] 내부 색칠 금지!
-                                    fillOpacity: 0            // 👈 [핵심] 완전 투명하게!
+                                    fill: false
                                 }
                             }).addTo(mapS3);
 
@@ -512,7 +525,7 @@ async function initSection4() {
         zoomControl: false,
         scrollWheelZoom: false,
         crs: getCrsEx()
-    }).setView([37.5680, 126.9830], 10);
+    }).setView([37.5680, 126.9830], 7);
 
     // 💡 2. 서울맵 V5 타일 적용
     const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
@@ -600,11 +613,11 @@ async function initSection5() {
         zoomControl: false,
         scrollWheelZoom: false,
         crs: getCrsEx()
-    }).setView([37.5600, 126.9800], 10);
+    }).setView([37.5680, 126.9830], 10);
 
     // 💡 2. 서울맵 V5 타일 적용
     const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
-    new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 1, maxZoom: 15 }).addTo(mapS5);
+    new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 10, maxZoom: 10 }).addTo(mapS5);
 
     let activeMarkerS5 = null;
 
@@ -648,27 +661,22 @@ async function initSection5() {
                 </div>
             `;
 
-            // 5. 카드 클릭 시 지도 이동 (FlyTo) 및 팝업 (원본 로직 100% 유지)
             card.addEventListener('click', () => {
                 document.querySelectorAll('.sc5-card').forEach(c => c.classList.remove('active'));
                 card.classList.add('active');
 
-                if (activeMarkerS5) {
-                    mapS5.removeLayer(activeMarkerS5);
-                }
+                if (activeMarkerS5) mapS5.removeLayer(activeMarkerS5);
 
-                // 💡 줌 레벨 조정 (기존 15 -> 13)
-                mapS5.flyTo([lat, lng], 13, { animate: true, duration: 1.5 });
-
+                // 1. 마커 먼저 생성
                 const icon = L.divIcon({
                     className: 'sc5-marker-wrapper',
                     html: `<div class="sc5-custom-pin"></div>`,
                     iconSize: [16, 44],
                     iconAnchor: [8, 44]
                 });
-
                 activeMarkerS5 = L.marker([lat, lng], { icon: icon }).addTo(mapS5);
 
+                // 2. [핵심] 팝업이 지도를 강제로 움직이지 않게 설정 (autoPan: false)
                 const popupContent = `
                     <div class="sc5-popup-inner">
                         <h3>${name}</h3>
@@ -680,8 +688,18 @@ async function initSection5() {
                 activeMarkerS5.bindPopup(popupContent, {
                     offset: [0, -35],
                     className: 'sc5-leaflet-popup',
-                    autoPanPadding: [50, 50]
+                    autoPan: false // 🚨 팝업이 지도를 강제로 흔드는 것을 차단!
                 }).openPopup();
+
+                // 3. [핵심] 지도 중심을 화면상 중앙(카드를 제외한 부분의 중앙)으로 명확히 이동
+                // 카드가 하단에 고정되어 있으므로, 위쪽 여백을 20% 정도 줍니다.
+                const zoom = 13;
+                // lat에서 살짝 위쪽으로 중심을 옮겨야 마커가 중앙에 보임
+                const centerLatLng = [lat, lng];
+
+                mapS5.setView(centerLatLng, zoom, { animate: true, duration: 1.0 });
+
+                setTimeout(() => { mapS5.invalidateSize(); }, 600);
             });
 
             trackContainer.appendChild(card);
