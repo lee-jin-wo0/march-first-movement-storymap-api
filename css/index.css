@@ -41,6 +41,10 @@ body,
     background-color: transparent !important;
 }
 
+.leaflet-control-attribution {
+    display: none !important;
+}
+
 /* =========================================
    [공통 스타일] 전체 섹션 및 헤더 영역
 ========================================= */
@@ -165,11 +169,6 @@ body,
     background-color: var(--red);
     border-color: var(--red);
     transform: scale(1.1);
-}
-
-.global-dot:hover {
-    transform: scale(1.2);
-    border-color: rgba(255, 255, 255, 0.9);
 }
 
 /* =========================================
@@ -790,29 +789,55 @@ body,
     transform: scale(1);
 }
 
+
+/* =========================================
+   마커 기본 & 비활성 상태 (연한 색)
+========================================= */
 .sc2-marker-circle {
     width: 2rem;
     height: 2rem;
-    background-color: black;
     border-radius: 9999px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
     font-weight: bold;
     font-size: 0.875rem;
-    box-shadow: 0 0 15px rgba(12, 4, 4, 0.5);
+    transition: all 0.3s ease;
 }
 
-.sc2-marker-label {
-    margin-top: 0.25rem;
-    background-color: rgba(0, 0, 0, 0.9);
-    padding: 0.125rem 0.5rem;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.9);
-    white-space: nowrap;
-    border-radius: 0.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+.sc2-marker-dimmed .sc2-marker-circle {
+    background-color: rgba(0, 0, 0, 0.3);
+    /* 연한 배경 */
+    color: rgba(255, 255, 255, 0.5);
+    /* 연한 글씨 */
+    box-shadow: none;
+}
+
+/* =========================================
+   마커 활성화 상태 (진한 색)
+========================================= */
+.sc2-marker-active .sc2-marker-circle {
+    background-color: rgba(0, 0, 0, 1);
+    /* 찐한 검정 */
+    color: #ffffff;
+    /* 찐한 흰색 글씨 */
+    box-shadow: 0 0 15px rgba(12, 4, 4, 0.8);
+    /* 그림자 효과 */
+}
+
+/* =========================================
+   마커 위 글씨(툴팁) 상태 제어
+========================================= */
+.sc2-tooltip-dimmed {
+    opacity: 0.4;
+    /* 비활성 시 글씨 반투명하게 */
+    transition: opacity 0.3s ease;
+}
+
+.sc2-tooltip-active {
+    opacity: 1;
+    /* 활성 시 글씨 뚜렷하게 */
+    transition: opacity 0.3s ease;
 }
 
 @media (max-width: 767px) {
@@ -1262,27 +1287,25 @@ body,
     left: 3rem;
     z-index: 1000;
     background-color: #f5eddd;
-    padding: 2rem;
+    padding: 1.2rem;
+    /* 기존 2rem에서 축소 */
     border-radius: 4px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     color: #1f1b12;
-    min-width: 280px;
+    min-width: 200px;
+    /* 기존 280px에서 축소 */
 }
 
-.sc4-legend-title {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
 
 .sc4-legend-list {
     list-style: none;
     padding: 0;
-    margin: 0 0 2rem 0;
+    margin: 0;
+    /* 기존 0 0 2rem 0에서 변경 (하단 여백 제거) */
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
+    /* 기존 1.5rem에서 축소 */
 }
 
 .sc4-legend-list li {
@@ -1301,14 +1324,6 @@ body,
     display: block;
     font-size: 0.75rem;
     color: #555;
-}
-
-.sc4-legend-footer {
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    color: #777;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding-top: 1rem;
 }
 
 .sc4-legend-dot {
@@ -1437,24 +1452,30 @@ body,
 
     .sc4-map-view {
         height: 100vh;
+        width: 100vw;
+        /* 화면 너비 100% 꽉 채우기 */
+        margin-left: calc(-50vw + 50%);
+        /* 부모 요소의 패딩을 무시하고 강제로 넓히기 */
+        overflow: hidden;
+        /* 바깥으로 삐져나가는 부분 숨김 */
     }
 
     .sc4-legend {
         bottom: 1.5rem;
         left: 1.5rem;
-        right: 1.5rem;
-        min-width: auto;
-        padding: 1.5rem;
-    }
-
-    .sc4-legend-title {
-        font-size: 1rem;
-        margin-bottom: 1rem;
+        right: auto;
+        /* 기존 1.5rem을 auto로 변경하여 옆으로 늘어나는 현상 방지 */
+        min-width: max-content;
+        /* 내용물 크기에 맞게 너비 조절 */
+        padding: 1rem;
+        /* 여백 축소 */
     }
 
     .sc4-legend-list {
-        gap: 1rem;
-        margin-bottom: 1.2rem;
+        gap: 0.8rem;
+        /* 간격 축소 */
+        margin-bottom: 0;
+        /* 마진 제거 */
     }
 
     .sc4-legend-text strong {
@@ -1463,11 +1484,6 @@ body,
 
     .sc4-legend-text span {
         font-size: 0.7rem;
-    }
-
-    .sc4-legend-footer {
-        font-size: 0.6rem;
-        padding-top: 0.8rem;
     }
 }
 
@@ -1496,7 +1512,7 @@ body,
 .sc5-carousel-wrapper {
     position: absolute;
     bottom: 2rem;
-    left: 0%;
+    left: 1%;
     transform: translateX(-50%);
     width: 95%;
     max-width: 100%;
@@ -1523,7 +1539,8 @@ body,
 }
 
 .sc5-card {
-    flex: 0 0 220px;
+    flex: 0 0 180px;
+    /* 기존 220px에서 180px로 축소 (원하는 수치로 조정 가능) */
     background: #1f1b12;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
@@ -1542,7 +1559,8 @@ body,
 
 .sc5-card-img {
     width: 100%;
-    height: 150px;
+    height: 120px;
+    /* 기존 150px에서 120px로 축소 */
     background-color: #2a251c;
     overflow: hidden;
     display: flex;
@@ -1572,14 +1590,14 @@ body,
 .sc5-card-info h4 {
     color: #fff;
     font-family: 'Noto Serif KR', serif;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .sc5-card-info p {
     color: var(--gold);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1588,6 +1606,7 @@ body,
 .sc5-nav-btn {
     width: 44px;
     height: 44px;
+    margin-left: 20px;
     border-radius: 50%;
     background: rgba(14, 14, 14, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1740,7 +1759,7 @@ body,
 
 .sc6-card {
     background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 8px;
     padding: 2rem 1.5rem;
     text-align: center;

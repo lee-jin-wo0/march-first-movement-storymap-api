@@ -337,10 +337,10 @@ async function initSection2() {
                         }
                     });
 
-                    targetIds.forEach((id, index) => {
+                    targetIds.forEach((id) => {
                         const container = document.getElementById(`map-marker-container-${id}`);
                         if (container) {
-                            if (index <= activeIndex) {
+                            if (id === activeId) { // 👈 조건 변경: 현재 카드의 id와 같을 때만!
                                 container.classList.remove('sc2-marker-dimmed');
                                 container.classList.add('sc2-marker-active');
                             } else {
@@ -525,7 +525,7 @@ async function initSection4() {
         zoomControl: false,
         scrollWheelZoom: false,
         crs: getCrsEx()
-    }).setView([37.5680, 126.9830], 7);
+    }).setView([37.577613288258206, 126.97689786832184], 7);
 
     // 💡 2. 서울맵 V5 타일 적용
     const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
@@ -613,7 +613,7 @@ async function initSection5() {
         zoomControl: false,
         scrollWheelZoom: false,
         crs: getCrsEx()
-    }).setView([37.5680, 126.9830], 10);
+    }).setView([37.577613288258206, 126.97689786832184], 10);
 
     // 💡 2. 서울맵 V5 타일 적용
     const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
