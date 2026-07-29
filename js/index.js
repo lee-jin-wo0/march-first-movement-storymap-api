@@ -1,10 +1,17 @@
 /* =======================================================
+   [모듈 가져오기]
+   - api/mapService.js에서 API 주소(MAP_ENDPOINTS)와 데이터 호출 함수들을 가져옵니다.
+   - 🚨 주의: 이 파일을 HTML에서 불러올 때는 반드시 <script type="module" src="index.js"></script> 형태로 선언해야 합니다.
+======================================================= */
+import { MAP_ENDPOINTS, fetchTimeTravelData, fetchDailyLifeData } from '../api/mapService.js';
+
+/* =======================================================
    1. 스마트서울맵 OpenAPI V5 동적 로드 (Leaflet 확장팩)
-   - 웹페이지 로드 시 API 스크립트를 순차적으로 불러오는 역할
+   - 역할: 페이지 진입 시 config.js의 MAP_API_KEY를 이용해 서울시 지도 스크립트와 CSS를 <head>에 주입합니다.
 ======================================================= */
 function loadSeoulMapAPI() {
   return new Promise((resolve, reject) => {
-    // API 키가 없으면 경고창 띄우고 종료
+    // API 키 존재 여부 확인
     if (typeof CONFIG === 'undefined' || !CONFIG.MAP_API_KEY) {
       console.warn("API 키가 없습니다. config.js를 확인하세요.");
       resolve();
@@ -13,7 +20,7 @@ function loadSeoulMapAPI() {
 
     const key = CONFIG.MAP_API_KEY;
 
-    // 1-1. 서울맵 전용 CSS 로드 (동적으로 <head>에 추가)
+    // 1-1. 서울맵 전용 CSS 동적 로드
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = `https://map.seoul.go.kr/openapi/v5/${key}/public/map/css/5.0`;
@@ -24,14 +31,12 @@ function loadSeoulMapAPI() {
     script1.src = `https://map.seoul.go.kr/openapi/v5/${key}/public/map/js/5.0`;
     document.head.appendChild(script1);
 
-    // [중요] 메인 JS가 완전히 로드된 후에 좌표계 확장 JS를 로드해야 에러가 안 납니다.
+    // 1-3. 메인 JS 로드 완료 후, 한국 전용 좌표계(EPSG:5179) 확장 JS 순차 로드
     script1.onload = () => {
-      // 1-3. 한국 전용 좌표계(EPSG:5179) 확장 JS 로드
       const script2 = document.createElement('script');
       script2.src = `https://map.seoul.go.kr/openapi/v5/${key}/public/map/base/js/5179/5.0`;
 
-      // 모든 스크립트가 성공적으로 로드되면 Promise 완료(resolve) 처리
-      script2.onload = () => resolve();
+      script2.onload = () => resolve(); // 스크립트가 모두 불러와지면 Promise 완료 처리
       script2.onerror = () => reject(new Error("좌표계 스크립트 로드 실패"));
 
       document.head.appendChild(script2);
@@ -41,32 +46,25 @@ function loadSeoulMapAPI() {
   });
 }
 
-
 /* =======================================================
-   2. 전역 스크롤 및 UI 컨트롤 (기존 index.js)
-   - 우측 네비게이션 도트(점)와 Top 버튼의 동작 제어
+   2. 전역 스크롤 및 UI 컨트롤
+   - 역할: 화면 우측의 네비게이션 도트(점)와 우측 하단의 Top 버튼 동작을 제어합니다.
 ======================================================= */
 function initGlobalUI() {
   const dots = document.querySelectorAll('.global-dot');
   const sections = document.querySelectorAll('.scroll-section');
 
-  // 스크롤 감지기(IntersectionObserver) 옵션 설정
-  const observerOptions = {
-    root: null,
-    rootMargin: '-40% 0px -40% 0px', // 화면 중앙 20% 영역에 들어올 때 감지
-    threshold: 0
-  };
+  // 화면 중앙 영역에 섹션이 들어왔는지 감지하기 위한 옵션
+  const observerOptions = { root: null, rootMargin: '-40% 0px -40% 0px', threshold: 0 };
 
-  // 섹션이 화면에 들어오면 해당 섹션 번호와 일치하는 도트에 'active' 클래스 부여
+  // 스크롤 시 현재 보고 있는 섹션과 일치하는 네비게이션 도트 활성화
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const currentNum = entry.target.getAttribute('data-section');
         dots.forEach(dot => {
           dot.classList.remove('active');
-          if (dot.getAttribute('data-target-section') === currentNum) {
-            dot.classList.add('active');
-          }
+          if (dot.getAttribute('data-target-section') === currentNum) dot.classList.add('active');
         });
       }
     });
@@ -74,390 +72,288 @@ function initGlobalUI() {
 
   sections.forEach(section => observer.observe(section));
 
-  // 도트 클릭 시 해당 섹션으로 부드럽게 스크롤 이동
+  // 네비게이션 도트 클릭 시 해당 섹션으로 부드럽게 스크롤 이동
   dots.forEach(dot => {
     dot.addEventListener('click', function () {
       const targetNum = this.getAttribute('data-target-section');
       const targetSection = document.querySelector(`.scroll-section[data-section="${targetNum}"]`);
-      if (targetSection) {
-        targetSection.scrollIntoView({ behavior: 'smooth' });
-      }
+      if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth' });
     });
   });
 
-  // 하단 Top 버튼 스크롤 감지 및 클릭 이벤트
+  // 스크롤이 일정량(300px) 내려가면 Top 버튼 표시
   const backToTopBtn = document.getElementById('backToTopBtn');
   if (backToTopBtn) {
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 300) {
-        backToTopBtn.classList.add('show');
-      } else {
-        backToTopBtn.classList.remove('show');
-      }
+      if (window.scrollY > 300) backToTopBtn.classList.add('show');
+      else backToTopBtn.classList.remove('show');
     });
-
-    backToTopBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    // Top 버튼 클릭 시 최상단으로 이동
+    backToTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }
 }
 
-
 /* =======================================================
-   섹션 1: 4개의 개별 지도 초기화 (V5 리플렛 하이브리드)
+   섹션 1: 4개의 개별 지도 초기화 (정적 지도)
+   - 역할: 남산, 덕수궁, 파리, 도쿄 4개의 소형 지도를 각각 띄우고 마커를 꽂습니다.
 ======================================================= */
 function initSection1Maps() {
-  // 섹션 1에 들어갈 4개 지도의 설정값 (위도, 경도, 줌, 지역 구분 등)
+  // 각 지도별 중심 좌표와 줌 레벨, 국내/해외 구분 설정
   const mapConfigsS1 = [
-    { id: 'map-s1-1', center: [37.5562, 126.9850], zoom: 11, title: '남산 통감관저 터 (한일병합조약)', region: 'seoul' },
-    { id: 'map-s1-2', center: [37.5658, 126.9751], zoom: 11, title: '덕수궁 함녕전 (고종 승하)', region: 'seoul' },
-    { id: 'map-s1-3', center: [48.8566, 2.3522], zoom: 8, title: '프랑스 파리 (파리강화회의)', region: 'global' },
-    { id: 'map-s1-4', center: [35.6989, 139.7544], zoom: 15, title: '도쿄 YMCA (2·8 독립선언지)', region: 'global' }
+    { id: 'map-s1-1', center: [37.5562, 126.9850], zoom: 11, title: '남산 통감관저 터', region: 'seoul' },
+    { id: 'map-s1-2', center: [37.5658, 126.9751], zoom: 11, title: '덕수궁 함녕전', region: 'seoul' },
+    { id: 'map-s1-3', center: [48.8566, 2.3522], zoom: 8, title: '프랑스 파리', region: 'global' },
+    { id: 'map-s1-4', center: [35.6989, 139.7544], zoom: 15, title: '도쿄 YMCA', region: 'global' }
   ];
 
   mapConfigsS1.forEach(config => {
     const mapElement = document.getElementById(config.id);
     if (!mapElement) return;
 
-    // 1. 공통 Leaflet 맵 객체 생성
+    // 지도 객체 생성 (서울은 특수좌표계 EPSG:5179 적용)
     const map = L.map(config.id, {
-      center: config.center,
-      zoom: config.zoom,
-      zoomControl: false,
-      scrollWheelZoom: false, // 마우스 휠 스크롤로 지도 확대 방지
-      attributionControl: false,
-      // 서울은 특수 좌표계(5179), 해외는 글로벌 표준 좌표계(3857) 적용
-      crs: config.region === 'seoul' ? getCrsEx() : L.CRS.EPSG3857
+      center: config.center, zoom: config.zoom, zoomControl: false, scrollWheelZoom: false,
+      attributionControl: false, crs: config.region === 'seoul' ? getCrsEx() : L.CRS.EPSG3857
     });
 
-    // 2. 지역별 타일 레이어(배경 지도) 분기
+    // 지역에 따라 서울맵 타일 또는 글로벌 오픈스트리트맵 타일 적용
     if (config.region === 'seoul') {
-      // 서울 지역: V5 확장팩(DAWULGIS_EX) 타일 호출
-      const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
-      const baseMapLayer = new L.TileLayer.DAWULGIS_EX(BASE_MAP, {
-        minZoom: 1,
-        maxZoom: 15
-      });
+      const baseMapLayer = new L.TileLayer.DAWULGIS_EX(MAP_ENDPOINTS.seoulBaseMap_kor, { minZoom: 1, maxZoom: 15 });
       map.addLayer(baseMapLayer);
     } else {
-      // 해외 지역: 글로벌 오픈스트리트맵 기반 타일 사용
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19
-      }).addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
     }
 
-    // 3. 지도 위에 펄스(파동) 애니메이션 마커와 툴팁 추가
-    const icon = L.divIcon({
-      className: 'custom-marker-wrapper',
-      html: '<div class="map-pulse"></div>',
-      iconSize: [14, 14],
-      iconAnchor: [7, 7]
-    });
-
-    L.marker(config.center, { icon: icon })
-      .addTo(map)
-      .bindTooltip(config.title, {
-        permanent: true, // 툴팁 항상 표시
-        direction: 'top',
-        offset: [0, -15],
-        className: 'custom-tooltip'
-      }).openTooltip();
+    // 마커 아이콘 설정 및 툴팁 바인딩
+    const icon = L.divIcon({ className: 'custom-marker-wrapper', html: '<div class="map-pulse"></div>', iconSize: [14, 14], iconAnchor: [7, 7] });
+    L.marker(config.center, { icon: icon }).addTo(map)
+      .bindTooltip(config.title, { permanent: true, direction: 'top', offset: [0, -15], className: 'custom-tooltip' }).openTooltip();
   });
 
-  // 섹션 내 텍스트/요소가 스크롤할 때 스르륵 나타나는 애니메이션 감지
+  // 스크롤 시 섹션 내 텍스트/지도 요소가 스르륵 나타나는 페이드인 애니메이션
   const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('active', 'visible');
-      }
-    });
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active', 'visible'); });
   }, { threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
-
   document.querySelectorAll('.sc1-reveal').forEach(el => revealObserver.observe(el));
 }
 
-
 /* =======================================================
-   도우미 함수: 두 지점 간의 곡선 경로 생성 (섹션 2 용)
-   - 직선이 아닌 약간 휘어진 형태의 베지어 곡선 좌표 배열을 반환
+   도우미 함수: 곡선 경로 생성기 (섹션 2 용)
+   - 역할: 마커와 마커를 이을 때 직선이 아닌 부드러운 베지어 곡선 형태의 좌표 배열을 반환합니다.
 ======================================================= */
 function generateCurvedPath(coords) {
   if (coords.length < 2) return coords;
   let curvedCoords = [];
   for (let i = 0; i < coords.length - 1; i++) {
-    const start = coords[i];
-    const end = coords[i + 1];
-    const lat1 = start[0], lng1 = start[1];
-    const lat2 = end[0], lng2 = end[1];
-    const midLat = (lat1 + lat2) / 2;
-    const midLng = (lng1 + lng2) / 2;
-    const dLat = lat2 - lat1;
-    const dLng = lng2 - lng1;
-    const intensity = 0.2; // 곡선의 휘어짐 정도
+    const start = coords[i], end = coords[i + 1];
+    const lat1 = start[0], lng1 = start[1], lat2 = end[0], lng2 = end[1];
+    const midLat = (lat1 + lat2) / 2, midLng = (lng1 + lng2) / 2;
+    const intensity = 0.2, direction = (i === 0 || i === 1 || i === 4) ? 1 : -1;
+    const cpLat = midLat - ((lng2 - lng1) * (intensity * direction));
+    const cpLng = midLng + ((lat2 - lat1) * (intensity * direction));
 
-    // 특정 구간마다 곡선의 방향(위/아래)을 다르게 줌
-    const isTargetLine = (i === 0 || i === 1 || i === 4);
-    const direction = isTargetLine ? 1 : -1;
-    const offset = intensity * direction;
-    const cpLat = midLat - (dLng * offset);
-    const cpLng = midLng + (dLat * offset);
-
-    // 곡선을 부드럽게 만들기 위해 20단계로 쪼개어 좌표 계산
-    const steps = 20;
-    for (let step = 0; step <= steps; step++) {
-      const t = step / steps;
+    // 선을 부드럽게 만들기 위해 좌표를 20개로 쪼갬
+    for (let step = 0; step <= 20; step++) {
+      const t = step / 20;
       const lat = (1 - t) * (1 - t) * lat1 + 2 * (1 - t) * t * cpLat + t * t * lat2;
       const lng = (1 - t) * (1 - t) * lng1 + 2 * (1 - t) * t * cpLng + t * t * lng2;
-      if (i > 0 && step === 0) continue; // 중복 지점 방지
+      if (i > 0 && step === 0) continue; // 이전 선분과의 중복 좌표 제거
       curvedCoords.push([lat, lng]);
     }
   }
   return curvedCoords;
 }
 
-
 /* =======================================================
-   섹션 2: 거사의 맹세 (타임라인 스크롤 & 맵 마커 동기화)
+   섹션 2: 거사의 맹세 (타임라인 스크롤 동기화)
+   - 테마 API의 "3.1운동 준비" 카테고리 데이터만 추출하여 시간순으로 렌더링
 ======================================================= */
 async function initSection2() {
   const mapContainer = document.getElementById('map-s2');
   if (!mapContainer) return;
 
-  // 1. 지도 기본 세팅 (서울 좌표계)
-  const mapS2 = L.map('map-s2', {
-    zoomControl: false,
-    scrollWheelZoom: false,
-    crs: getCrsEx()
-  }).setView([37.5759 + 0.001, 126.9850 - 0.01], 10);
+  const mapS2 = L.map('map-s2', { zoomControl: false, scrollWheelZoom: false, crs: getCrsEx() }).setView([37.5759, 126.9850], 10);
+  new L.TileLayer.DAWULGIS_EX(MAP_ENDPOINTS.seoulBaseMap_kor, { minZoom: 1, maxZoom: 15 }).addTo(mapS2);
 
-  // 2. 서울맵 V5 배경 타일 추가
-  const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
-  new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 1, maxZoom: 15 }).addTo(mapS2);
-
-  // 브라우저 리사이즈 시 맵 크기 재조정 방어 코드
   const resizeObserverS2 = new ResizeObserver(() => mapS2.invalidateSize());
   resizeObserverS2.observe(mapContainer);
 
-  // 점선 형태의 경로 선(Polyline) 껍데기 미리 생성
-  const pathLine = L.polyline([], {
-    color: '#000000', weight: 3, dashArray: '8, 8', opacity: 1, lineJoin: 'round'
-  }).addTo(mapS2);
+  const pathLine = L.polyline([], { color: '#000000', weight: 3, dashArray: '8, 8', opacity: 1, lineJoin: 'round' }).addTo(mapS2);
 
-  // 타임라인 카드 스크롤 등장 애니메이션 감지기
   const sc2RevealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('active');
-      else entry.target.classList.remove('active');
-    });
+    entries.forEach(entry => entry.isIntersecting ? entry.target.classList.add('active') : entry.target.classList.remove('active'));
   }, { threshold: 0.4, rootMargin: "0px 0px -10% 0px" });
 
   try {
-    // 3. 외부 GeoJSON 데이터 불러오기
-    const response = await fetch('./assets/data/data1_3·1운동시간여행.geojson');
-    const geojsonData = await response.json();
+    const geojsonData = await fetchTimeTravelData();
 
-    // 표시할 마커 순서 ID
-    const targetIds = ["46", "13", "78", "20", "37", "42", "40", "8", "24"];
+    // 💡 [핵심] "3.1운동 준비" 카테고리에 해당하는 장소들의 실제 API ID (COT_CONTS_ID)
+    // 이 배열에 적힌 순서대로 좌측 타임라인 카드와 우측 맵의 경로가 연결됩니다.
+    const targetIds = [
+      "start_01", // 중앙고보 숙직실 터 (2.8 독립선언서 전달)
+      "start_02", // 김성수 숙소 터 (단일화 합의)
+      "start_03", // 손병희 집터 (거사 전날 회합)
+      "start_04", // 옛 천도교 중앙총부 터 (거사 추진 거점)
+      "start_08", // 승동교회 (학생단 간부회)
+      "start_05", // 보성사 터 (독립선언서 인쇄)
+      "start_09", // 이종일 집터 (독립선언서 배포)
+      "start_07", // 태화관 터 (민족대표 33인 독립선언식)
+      "start_13"  // 탑골공원 (학생/시민 만세운동 시작)
+    ];
+
     const timelineData = [];
     const locationsS2 = [];
 
-    // GeoJSON에서 필요한 데이터만 추출하여 배열에 담기
+    // 설정한 ID 순서대로 API 데이터에서 값을 뽑아옵니다.
     targetIds.forEach(targetId => {
-      const feature = geojsonData.features.find(f => String(f.id) === targetId);
-      if (feature) {
-        let finalImgUrl = feature.properties.IMG_MAIN_URL || "";
+      const feature = geojsonData.features.find(f => f.properties.COT_CONTS_ID === targetId);
 
-        // 이미지 URL이 상대경로면 서울맵 도메인 붙여주기
+      if (feature) {
+        const props = feature.properties;
+        let finalImgUrl = props.COT_IMG_MAIN_URL || "";
         if (finalImgUrl && !finalImgUrl.startsWith("http")) {
-          finalImgUrl = finalImgUrl.startsWith("/")
-            ? "https://map.seoul.go.kr" + finalImgUrl
-            : "https://map.seoul.go.kr/" + finalImgUrl;
+          finalImgUrl = "https://map.seoul.go.kr" + (finalImgUrl.startsWith("/") ? "" : "/") + finalImgUrl;
         }
 
         timelineData.push({
           id: targetId,
-          date: feature.properties.DATE || feature.properties.ADDR_OLD || "날짜 없음",
-          title: feature.properties.TITLE || feature.properties.CONTENTS_NAME,
-          desc: feature.properties.DESC || feature.properties.VALUE_03 || "설명 정보가 없습니다.",
+          date: props.COT_ADDR_FULL_OLD || "위치 정보 없음", // API에 날짜가 없으므로 옛날 주소를 표기
+          title: props.COT_CONTS_NAME || "제목 없음",
+          desc: props.COT_VALUE_03 || props.COT_VALUE_01 || "설명 정보가 없습니다.", // 상세 설명은 COT_VALUE_03에 들어있습니다.
           imgUrl: finalImgUrl
         });
 
-        // 좌표계 파싱 (Point 또는 GeometryCollection 지원)
-        let coords = null;
-        if (feature.geometry.type === 'Point') {
-          coords = feature.geometry.coordinates;
-        } else if (feature.geometry.type === 'GeometryCollection') {
-          const pointGeo = feature.geometry.geometries.find(g => g.type === 'Point');
-          if (pointGeo) coords = pointGeo.coordinates;
-        }
-
-        if (coords) {
+        if (feature.geometry.type === 'Point' && feature.geometry.coordinates) {
           locationsS2.push({
             id: targetId,
-            pos: [coords[1], coords[0]], // Leaflet은 [lat, lng] 순서 요구
-            label: feature.properties.CONTENTS_NAME
+            pos: [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
+            label: props.COT_CONTS_NAME
           });
         }
       }
     });
 
-    // 4. 추출한 데이터를 바탕으로 HTML 타임라인 리스트 생성
+    // 1. 좌측 타임라인 HTML 동적 생성
     const timelineList = document.getElementById('sc2-timeline-list');
     timelineList.innerHTML = '';
     timelineData.forEach(item => {
       const imageHTML = item.imgUrl ? `<img src="${item.imgUrl}" alt="${item.title}" class="sc2-item-img">` : "";
-      const cardHTML = `
+      timelineList.insertAdjacentHTML('beforeend', `
         <div class="sc2-timeline-item sc2-scroll-reveal" data-marker="${item.id}">
             <span class="sc2-item-date">${item.date}</span>
             <h3 class="sc2-item-title">${item.title}</h3>
-            ${imageHTML} <p class="sc2-item-desc">${item.desc}</p>
+            ${imageHTML} 
+            <p class="sc2-item-desc">${item.desc}</p>
         </div>
-      `;
-      timelineList.insertAdjacentHTML('beforeend', cardHTML);
+      `);
     });
 
     document.querySelectorAll('.sc2-scroll-reveal').forEach(el => sc2RevealObserver.observe(el));
 
-    // 5. 추출한 좌표를 바탕으로 지도 위에 번호 마커 그리기
+    // 2. 우측 지도 위에 순서대로 번호 마커 그리기
     const markers = {};
     locationsS2.forEach(loc => {
       const stepNumber = targetIds.indexOf(loc.id) + 1;
       const icon = L.divIcon({
         className: 'custom-div-icon',
-        html: `<div class='sc2-marker-wrapper sc2-marker-dimmed' id='map-marker-container-${loc.id}'>
-                  <div class='sc2-marker-circle'>${stepNumber}</div>
-               </div>`,
+        html: `<div class='sc2-marker-wrapper sc2-marker-dimmed' id='map-marker-container-${loc.id}'><div class='sc2-marker-circle'>${stepNumber}</div></div>`,
         iconSize: [30, 30], iconAnchor: [15, 15]
       });
-
       const marker = L.marker(loc.pos, { icon }).addTo(mapS2);
-      marker.bindTooltip(`<div style="text-align: center; font-weight: bold;">${loc.label}</div>`, {
-        permanent: true, direction: 'top', className: 'sc2-marker-tooltip', offset: [0, -15]
-      });
+      marker.bindTooltip(`<div style="text-align: center; font-weight: bold;">${loc.label}</div>`, { permanent: true, direction: 'top', className: 'sc2-marker-tooltip', offset: [0, -15] });
       markers[loc.id] = { marker, tooltip: marker.getTooltip() };
     });
 
-    // 초기 선 렌더링
     const initialCoords = targetIds.map(id => locationsS2.find(l => l.id === id)?.pos).filter(Boolean);
     pathLine.setLatLngs(generateCurvedPath(initialCoords));
 
-    // 6. 스크롤 감지에 따른 지도/마커 인터랙션 제어
+    // 3. 스크롤 감지 (마커 하이라이트 및 카메라 이동)
     const markerObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const activeId = String(entry.target.getAttribute('data-marker'));
           const activeIndex = targetIds.indexOf(activeId);
 
-          // 현재 활성화된 마커와 툴팁 하이라이트 (나머지는 어둡게 처리)
           Object.keys(markers).forEach(key => {
             const tooltipEl = markers[key]?.tooltip?.getElement();
             if (tooltipEl) {
-              if (key === activeId) {
-                tooltipEl.classList.remove('sc2-tooltip-dimmed');
-                tooltipEl.classList.add('sc2-tooltip-active');
-              } else {
-                tooltipEl.classList.remove('sc2-tooltip-active');
-                tooltipEl.classList.add('sc2-tooltip-dimmed');
-              }
+              if (key === activeId) { tooltipEl.classList.remove('sc2-tooltip-dimmed'); tooltipEl.classList.add('sc2-tooltip-active'); }
+              else { tooltipEl.classList.remove('sc2-tooltip-active'); tooltipEl.classList.add('sc2-tooltip-dimmed'); }
             }
           });
 
           targetIds.forEach((id) => {
             const container = document.getElementById(`map-marker-container-${id}`);
             if (container) {
-              if (id === activeId) {
-                container.classList.remove('sc2-marker-dimmed');
-                container.classList.add('sc2-marker-active');
-              } else {
-                container.classList.remove('sc2-marker-active');
-                container.classList.add('sc2-marker-dimmed');
-              }
+              if (id === activeId) { container.classList.remove('sc2-marker-dimmed'); container.classList.add('sc2-marker-active'); }
+              else { container.classList.remove('sc2-marker-active'); container.classList.add('sc2-marker-dimmed'); }
             }
           });
 
-          // 지나온 경로까지만 선(Path) 그리기 업데이트
           const visibleCoords = targetIds.slice(0, activeIndex + 1).map(id => locationsS2.find(l => String(l.id) === id)?.pos).filter(Boolean);
           pathLine.setLatLngs(generateCurvedPath(visibleCoords));
 
-          // 현재 카드의 좌표로 지도 부드럽게 이동(PanTo)
           const activeLoc = locationsS2.find(l => String(l.id) === activeId);
           if (activeLoc) {
             mapS2.invalidateSize();
-            const zoom = mapS2.getZoom();
-            // 화면 좌측 카드에 가려지지 않게 데스크탑에서는 오프셋(offsetX) 적용
-            const targetPoint = mapS2.project(activeLoc.pos, zoom);
-            const isMobile = window.innerWidth <= 768;
-            const offsetX = isMobile ? 0 : 300;
-            targetPoint.x -= offsetX;
-            mapS2.panTo(mapS2.unproject(targetPoint, zoom), { animate: true, duration: 1.2 });
+            const targetPoint = mapS2.project(activeLoc.pos, mapS2.getZoom());
+            targetPoint.x -= (window.innerWidth <= 768 ? 0 : 300);
+            mapS2.panTo(mapS2.unproject(targetPoint, mapS2.getZoom()), { animate: true, duration: 1.2 });
           }
         }
       });
     }, { threshold: 0.5, rootMargin: "-20% 0px -20% 0px" });
 
     document.querySelectorAll('.sc2-timeline-item').forEach(item => markerObserver.observe(item));
-
-  } catch (error) { console.error(error); }
+  } catch (error) { console.error('Section 2 에러:', error); }
 }
-
 
 /* =======================================================
    섹션 3: 함성의 궤적 (경로 라인 애니메이션)
+   - 역할: 스크롤을 내릴 때마다 지정된 이동경로(LineString)가 뱀이 기어가듯 그려지는 애니메이션 제공
 ======================================================= */
 async function initSection3() {
   const mapContainer = document.getElementById('map-s3');
   if (!mapContainer) return;
 
-  const mapS3 = L.map('map-s3', {
-    zoomControl: false,
-    scrollWheelZoom: false,
-    crs: getCrsEx()
-  }).setView([37.5665, 126.9780], 9);
-
-  const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
-  new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 9, maxZoom: 9 }).addTo(mapS3);
-
+  const mapS3 = L.map('map-s3', { zoomControl: false, scrollWheelZoom: false, crs: getCrsEx() }).setView([37.5665, 126.9780], 9);
+  new L.TileLayer.DAWULGIS_EX(MAP_ENDPOINTS.seoulBaseMap_kor, { minZoom: 9, maxZoom: 9 }).addTo(mapS3);
   setTimeout(() => { mapS3.invalidateSize(); }, 500);
 
   let activeGeoJsonLayer = null;
   let activeMarkers = [];
-  // 각 스크롤 카드별로 매칭될 GeoJSON 피처 ID
+
+  // 💡 매칭될 API 경로 데이터의 RNUM
   const sc3Groups = [
-    { id: 'east-1', targetIds: ["52"] }, { id: 'east-2', targetIds: ["50"] },
-    { id: 'west-1', targetIds: ["51"] }, { id: 'west-2', targetIds: ["53"] },
-    { id: 'west-3', targetIds: ["49"] }, { id: 'march5-1', targetIds: ["48"] },
-    { id: 'march5-2', targetIds: ["47"] }
+    { id: 'east-1', targetIds: ["22"] }, { id: 'east-2', targetIds: ["14"] },
+    { id: 'west-1', targetIds: ["21"] }, { id: 'west-2', targetIds: ["20"] },
+    { id: 'west-3', targetIds: ["19"] }, { id: 'march5-1', targetIds: ["8"] },
+    { id: 'march5-2', targetIds: ["4"] }
   ];
 
   const sc3RevealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('active');
-      else entry.target.classList.remove('active');
-    });
+    entries.forEach(entry => entry.isIntersecting ? entry.target.classList.add('active') : entry.target.classList.remove('active'));
   }, { threshold: 0.4, rootMargin: "0px 0px -10% 0px" });
 
   try {
-    const response = await fetch('./assets/data/data1_3·1운동시간여행.geojson');
-    const sc3Data = await response.json();
+    const sc3Data = await fetchTimeTravelData();
     const timelineList = document.getElementById('sc3-timeline-list');
     timelineList.innerHTML = '';
 
-    // HTML 카드 생성 로직
+    // HTML 리스트 카드 생성
     sc3Groups.forEach(group => {
-      const feature = sc3Data.features.find(f => String(f.id) === group.targetIds[0]);
+      const feature = sc3Data.features.find(f => String(f.id) === group.targetIds[0] || String(f.properties.RNUM) === group.targetIds[0]);
       if (feature) {
         const props = feature.properties;
-        const title = props.CONTENTS_NAME || "제목 없음";
-        const name1 = props.NAME_01 || "";
-        const val1 = props.VALUE_01 || "";
-        const name2 = props.NAME_02 || "";
-        const val2 = props.VALUE_02 ? props.VALUE_02.replace(/\n/g, '<br>') : "";
+        const title = props.COT_CONTS_NAME || "제목 없음";
+        const val1 = props.COT_VALUE_01 || "";
+        const val2 = props.COT_VALUE_03 ? String(props.COT_VALUE_03).replace(/\n/g, '<br>') : "";
 
         timelineList.insertAdjacentHTML('beforeend', `
           <div class="sc3-timeline-item sc3-scroll-reveal" data-feature-id="${group.targetIds[0]}">
               <h3 class="sc3-item-title">${title}</h3>
-              ${(name1 || val1) ? `<div class="sc3-route-box">${name1 ? `<strong class="sc3-route-label">${name1}</strong>` : ''}<p class="sc3-route-val">${val1}</p></div>` : ''}
-              ${(name2 || val2) ? `<div class="sc3-desc-box">${name2 ? `<strong class="sc3-route-label">${name2}</strong>` : ''}<p class="sc3-item-desc">${val2}</p></div>` : ''}
+              ${val1 ? `<div class="sc3-route-box"><p class="sc3-route-val">${val1}</p></div>` : ''}
+              ${val2 ? `<div class="sc3-desc-box"><p class="sc3-item-desc">${val2}</p></div>` : ''}
           </div>
         `);
       }
@@ -465,40 +361,27 @@ async function initSection3() {
 
     document.querySelectorAll('.sc3-scroll-reveal').forEach(el => sc3RevealObserver.observe(el));
 
-    // 스크롤 시 해당 ID의 GeoJSON 경로를 지도에 그리고 애니메이션(dash-offset) 적용
+    // 스크롤 시 경로 그리기 애니메이션 제어
     const mapUpdateObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const featureId = entry.target.getAttribute('data-feature-id');
-          const targetFeature = sc3Data.features.find(f => String(f.id) === featureId);
+          const targetFeature = sc3Data.features.find(f => String(f.id) === featureId || String(f.properties.RNUM) === featureId);
 
-          // 이전 경로 및 마커 지우기
+          // 이전 경로 및 마커 초기화
           if (activeGeoJsonLayer) mapS3.removeLayer(activeGeoJsonLayer);
           activeMarkers.forEach(m => mapS3.removeLayer(m));
           activeMarkers = [];
 
-          if (targetFeature) {
+          if (targetFeature && targetFeature.geometry.type === 'LineString') {
             mapS3.invalidateSize();
 
-            // 카메라(지도 뷰포트)를 그려질 경로 박스(bounds)에 맞춤
+            // 그려질 경로가 화면 중앙에 잘 보이도록 bounds(바운딩 박스) 맞춤
             const tempLayer = L.geoJSON(targetFeature);
             const isMobile = window.innerWidth <= 768;
-            const padTopLeft = isMobile ? [30, 30] : [450, 50]; // UI 영역 확보 패딩
-            const padBottomRight = isMobile ? [30, 150] : [50, 50];
+            mapS3.fitBounds(tempLayer.getBounds(), { paddingTopLeft: isMobile ? [30, 30] : [450, 50], paddingBottomRight: isMobile ? [30, 150] : [50, 50], maxZoom: 13, animate: true, duration: 0.5 });
 
-            mapS3.fitBounds(tempLayer.getBounds(), {
-              paddingTopLeft: padTopLeft, paddingBottomRight: padBottomRight, maxZoom: 13, animate: true, duration: 0.5
-            });
-
-            // 시작점, 도착점 마커 추출
-            let lineCoords = [];
-            if (targetFeature.geometry.type === 'GeometryCollection') {
-              const lineStringGeo = targetFeature.geometry.geometries.find(g => g.type === 'LineString');
-              if (lineStringGeo) lineCoords = lineStringGeo.coordinates;
-            } else if (targetFeature.geometry.type === 'LineString') {
-              lineCoords = targetFeature.geometry.coordinates;
-            }
-
+            const lineCoords = targetFeature.geometry.coordinates;
             if (lineCoords.length > 0) {
               const startCoord = [lineCoords[0][1], lineCoords[0][0]];
               const endCoord = [lineCoords[lineCoords.length - 1][1], lineCoords[lineCoords.length - 1][0]];
@@ -510,22 +393,16 @@ async function initSection3() {
               activeMarkers.push(L.marker(endCoord, { icon: endIcon }).addTo(mapS3));
             }
 
-            // 카메라 이동 후 경로 그리기 애니메이션 실행 (CSS dash-offset 기법)
+            // CSS stroke-dashoffset 속성을 이용한 SVG 경로 그리기 애니메이션 기법
             setTimeout(() => {
-              activeGeoJsonLayer = L.geoJSON(targetFeature, {
-                style: {
-                  color: '#000000', weight: 6, opacity: 0.9, lineJoin: 'round', className: 'sc3-draw-path', fill: false
-                }
-              }).addTo(mapS3);
-
-              const paths = document.querySelectorAll('.sc3-draw-path');
-              paths.forEach(path => {
+              activeGeoJsonLayer = L.geoJSON(targetFeature, { style: { color: '#000000', weight: 6, opacity: 0.9, lineJoin: 'round', className: 'sc3-draw-path', fill: false } }).addTo(mapS3);
+              document.querySelectorAll('.sc3-draw-path').forEach(path => {
                 const length = path.getTotalLength();
                 path.style.strokeDasharray = length;
                 path.style.strokeDashoffset = length;
-                path.getBoundingClientRect(); // 강제 렌더링(리플로우) 유발
+                path.getBoundingClientRect(); // 리플로우 유발 (애니메이션 강제 적용을 위해)
                 path.style.transition = 'stroke-dashoffset 2.5s ease-in-out';
-                path.style.strokeDashoffset = '0'; // 선이 그려지는 애니메이션 발동
+                path.style.strokeDashoffset = '0'; // 애니메이션 시작
               });
             }, 600);
           }
@@ -534,242 +411,199 @@ async function initSection3() {
     }, { threshold: 0.5, rootMargin: "-20% 0px -20% 0px" });
 
     document.querySelectorAll('.sc3-timeline-item').forEach(item => mapUpdateObserver.observe(item));
-  } catch (error) { console.error(error); }
+  } catch (error) { console.error('Section 3 에러:', error); }
 }
 
-
 /* =======================================================
-   섹션 4: 역사의 현장 (릴레이 마커 렌더링)
+   섹션 4: 역사의 현장 (릴레이 펄스 렌더링)
+   - 3: 시위장소 (site), 4: 중요지점 (hub) 매칭 수정 완료!
 ======================================================= */
 async function initSection4() {
   const mapContainer = document.getElementById('map-s4');
   if (!mapContainer) return;
 
-  const mapS4 = L.map('map-s4', {
-    zoomControl: false, scrollWheelZoom: false, crs: getCrsEx()
-  }).setView([37.577613288258206, 126.97689786832184], 7);
+  const mapS4 = L.map('map-s4', { zoomControl: false, scrollWheelZoom: false, crs: getCrsEx() }).setView([37.577613, 126.976897], 7);
+  new L.TileLayer.DAWULGIS_EX(MAP_ENDPOINTS.seoulBaseMap_kor, { minZoom: 1, maxZoom: 15 }).addTo(mapS4);
 
-  const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
-  new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 1, maxZoom: 15 }).addTo(mapS4);
-
-  let mapTriggered = false; // 중복 실행 방지 플래그
+  let mapTriggered = false;
 
   try {
-    const response = await fetch('./assets/data/data1_3·1운동시간여행.geojson');
-    const geojsonData = await response.json();
-
-    // 화면에 섹션 4가 등장할 때 마커를 하나씩 순차적으로(릴레이) 찍어주는 로직
+    const geojsonData = await fetchTimeTravelData();
     const observerS4 = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting && !mapTriggered) {
           mapTriggered = true;
           mapS4.invalidateSize();
-
-          let delay = 0; // 마커 등장 딜레이
+          let delay = 0;
 
           geojsonData.features.forEach((feature) => {
             const props = feature.properties;
-            const subId = String(props.SUB_ID);
-            const name = props.CONTENTS_NAME || "알 수 없는 장소";
+            const subId = String(props.COT_THEME_SUB_ID);
+            const name = props.COT_CONTS_NAME || "알 수 없는 장소";
 
-            if (!props.COORD_Y || !props.COORD_X) return;
+            if (!props.COT_COORD_Y || !props.COT_COORD_X) return;
+            const latlng = [parseFloat(props.COT_COORD_Y), parseFloat(props.COT_COORD_X)];
 
-            const lat = parseFloat(props.COORD_Y);
-            const lng = parseFloat(props.COORD_X);
-            const latlng = [lat, lng];
-
-            // 데이터의 SUB_ID 값에 따라 마커 색상(클래스) 분기
             let pulseClass = '';
-            if (subId === '3') pulseClass = 'sc4-pulse-hub';
-            else if (subId === '4') pulseClass = 'sc4-pulse-site';
+
+            // 💡 [수정됨] 3번(시위장소)과 4번(중요지점)의 클래스를 올바르게 교체했습니다.
+            if (subId === '3') pulseClass = 'sc4-pulse-site';      // 시위 장소
+            else if (subId === '4') pulseClass = 'sc4-pulse-hub';  // 중요 지점
 
             if (pulseClass !== '') {
               setTimeout(() => {
-                const icon = L.divIcon({
-                  className: 'sc4-marker-wrapper',
-                  html: `<div class="${pulseClass}"></div>`,
-                  iconSize: [24, 24], iconAnchor: [12, 12]
-                });
-
-                L.marker(latlng, { icon: icon })
-                  .addTo(mapS4)
-                  .bindTooltip(name, {
-                    direction: 'top', offset: [0, -10], className: 'custom-tooltip'
-                  });
+                const icon = L.divIcon({ className: 'sc4-marker-wrapper', html: `<div class="${pulseClass}"></div>`, iconSize: [24, 24], iconAnchor: [12, 12] });
+                L.marker(latlng, { icon: icon }).addTo(mapS4).bindTooltip(name, { direction: 'top', offset: [0, -10], className: 'custom-tooltip' });
               }, delay);
-              delay += 150; // 다음 마커는 0.15초 뒤에 등장
+              delay += 150;
             }
           });
         }
       });
     }, { threshold: 0.3 });
-
     observerS4.observe(mapContainer);
-  } catch (error) { console.error('Section 4 GeoJSON 로드 에러:', error); }
+  } catch (error) { console.error('Section 4 에러:', error); }
 
-  const sc4RevealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) entry.target.classList.add('active');
-    });
-  }, { threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
-
+  const sc4RevealObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
   document.querySelectorAll('.sc4-reveal').forEach(el => sc4RevealObserver.observe(el));
 }
 
-
 /* =======================================================
-   섹션 5: 독립의 별들 (하단 캐러셀 & 팝업 동기화)
+   섹션 5: 독립의 별들 (하단 캐러셀 & 팝업 양방향 동기화)
+   - 초기 화면: 모든 마커가 보이도록 줌 아웃 (fitBounds)
+   - 클릭 시: 해당 인물의 마커로 줌 인 (setView)
+   - minZoom: 1 로 수정하여 축소 시 지도가 까맣게 변하는 현상 방지
 ======================================================= */
 async function initSection5() {
   const mapContainer = document.getElementById('map-s5');
   if (!mapContainer) return;
 
-  const mapS5 = L.map('map-s5', {
-    zoomControl: false, scrollWheelZoom: false, crs: getCrsEx()
-  }).setView([37.577613288258206, 126.97689786832184], 10);
+  // 1. 지도 기본 생성 (기본 확대/축소 컨트롤 숨김)
+  const mapS5 = L.map('map-s5', { zoomControl: false, scrollWheelZoom: false, crs: getCrsEx() }).setView([37.577613, 126.976897], 10);
 
-  const BASE_MAP = `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`;
-  new L.TileLayer.DAWULGIS_EX(BASE_MAP, { minZoom: 10, maxZoom: 10 }).addTo(mapS5);
+  // 💡 minZoom을 1로 유지하여 지도가 까매지지 않도록 방지
+  new L.TileLayer.DAWULGIS_EX(MAP_ENDPOINTS.seoulBaseMap_kor, { minZoom: 1, maxZoom: 15 }).addTo(mapS5);
 
-  let activeMarkerS5 = null; // 현재 띄워진 단일 마커 관리
+  let activeMarkerS5 = null;
 
   try {
-    const response = await fetch('./assets/data/data2_3·1운동 생활 속 현장.geojson');
-    const geojsonData = await response.json();
-
+    const geojsonData = await fetchDailyLifeData();
     const trackContainer = document.getElementById('sc5-activist-list');
-    const activists = geojsonData.features.filter(f => String(f.properties.SUB_ID) === '5');
+
+    // 서브 아이디 5번(인물) 데이터 필터링
+    const activists = geojsonData.features.filter(f => String(f.properties.COT_THEME_SUB_ID) === '5');
+
+    // 이름(가나다)순 정렬
+    activists.sort((a, b) => {
+      const nameA = a.properties.COT_CONTS_NAME || "";
+      const nameB = b.properties.COT_CONTS_NAME || "";
+      return nameA.localeCompare(nameB, 'ko-KR');
+    });
+
+    const cardElements = [];
+    const allLatLngs = []; // 모든 마커의 좌표 수집용
 
     activists.forEach((feature) => {
       const props = feature.properties;
-      if (!props.COORD_Y || !props.COORD_X) return;
-      const lat = parseFloat(props.COORD_Y);
-      const lng = parseFloat(props.COORD_X);
-      const name = props.CONTENTS_NAME || "무명 열사";
+      if (!props.COT_COORD_Y || !props.COT_COORD_X) return;
 
-      let imgUrl = props.IMG_MAIN_URL || "";
-      if (imgUrl && !imgUrl.startsWith("http")) {
-        imgUrl = imgUrl.startsWith("/")
-          ? "https://map.seoul.go.kr" + imgUrl
-          : "https://map.seoul.go.kr/" + imgUrl;
-      }
+      const lat = parseFloat(props.COT_COORD_Y);
+      const lng = parseFloat(props.COT_COORD_X);
+      const name = props.COT_CONTS_NAME || "무명 열사";
+      const shortAddr = props.COT_ADDR_FULL_NEW || props.COT_ADDR_FULL_OLD || "활동 지역 불명";
+      const detailDesc = props.COT_VALUE_03 || props.COT_VALUE_01 || "상세한 기록이 남아있지 않습니다.";
+      let imgUrl = props.COT_IMG_MAIN_URL || "";
+      if (imgUrl && !imgUrl.startsWith("http")) imgUrl = "https://map.seoul.go.kr" + (imgUrl.startsWith("/") ? "" : "/") + imgUrl;
 
-      const shortAddr = props.ADDR_OLD || "활동 지역 불명";
-      const detailDesc = props.VALUE_03 || props.VALUE_01 || "상세한 기록이 남아있지 않습니다.";
+      // 좌표 수집
+      allLatLngs.push([lat, lng]);
 
-      // 하단 인물 슬라이드(캐러셀) 카드 HTML 생성
+      // 하단 슬라이드(캐러셀) 카드 생성
       const card = document.createElement('div');
       card.className = 'sc5-card';
       card.innerHTML = `
-        <div class="sc5-card-img">
-            <img src="${imgUrl}" alt="${name} 사진" onerror="this.style.display='none';">
-        </div>
-        <div class="sc5-card-info">
-            <h4>${name}</h4>
-            <p>${shortAddr.split(' ')[0]} ${shortAddr.split(' ')[1] || ''}</p>
-        </div>
+        <div class="sc5-card-img"><img src="${imgUrl}" alt="${name} 사진" onerror="this.style.display='none';"></div>
+        <div class="sc5-card-info"><h4>${name}</h4><p>${shortAddr.split(' ')[0]} ${shortAddr.split(' ')[1] || ''}</p></div>
       `;
+      cardElements.push(card);
+      trackContainer.appendChild(card);
 
-      // 인물 카드를 클릭했을 때의 동작
+      // 지도 마커 생성
+      const icon = L.divIcon({ className: 'sc5-marker-wrapper', html: `<div class="sc5-custom-pin"></div>`, iconSize: [16, 44], iconAnchor: [8, 44] });
+      const marker = L.marker([lat, lng], { icon: icon }).addTo(mapS5);
+
+      const popupContent = `<div class="sc5-popup-inner"><h3>${name}</h3><span class="sc5-pop-addr">${shortAddr}</span><div class="sc5-pop-desc">${detailDesc}</div></div>`;
+      marker.bindPopup(popupContent, { offset: [0, -35], className: 'sc5-leaflet-popup', autoPan: false });
+
+      // 클릭 시 줌인 될 적당한 레벨 (12 설정)
+      const zoomLevel = 12;
+
+      // A. 카드를 클릭했을 때
       card.addEventListener('click', () => {
-        document.querySelectorAll('.sc5-card').forEach(c => c.classList.remove('active'));
+        cardElements.forEach(c => c.classList.remove('active'));
         card.classList.add('active');
 
-        // 기존에 찍혀있던 마커가 있으면 제거
-        if (activeMarkerS5) mapS5.removeLayer(activeMarkerS5);
-
-        // 새 마커 생성
-        const icon = L.divIcon({
-          className: 'sc5-marker-wrapper',
-          html: `<div class="sc5-custom-pin"></div>`,
-          iconSize: [16, 44], iconAnchor: [8, 44]
-        });
-        activeMarkerS5 = L.marker([lat, lng], { icon: icon }).addTo(mapS5);
-
-        // 상세 설명 팝업 연결
-        const popupContent = `
-          <div class="sc5-popup-inner">
-              <h3>${name}</h3>
-              <span class="sc5-pop-addr">${props.ADDR_OLD || '주소 정보 없음'}</span>
-              <div class="sc5-pop-desc">${detailDesc}</div>
-          </div>
-        `;
-
-        activeMarkerS5.bindPopup(popupContent, {
-          offset: [0, -35], className: 'sc5-leaflet-popup',
-          autoPan: false // 🚨 [핵심] 팝업이 열릴 때 지도가 덜컹거리며 강제 이동하는 것을 막아줌
-        }).openPopup();
-
-        // 팝업 생성 후 지도를 해당 마커 위치로 부드럽게 이동시킴
-        const zoom = 13;
-        const centerLatLng = [lat, lng];
-        mapS5.setView(centerLatLng, zoom, { animate: true, duration: 1.0 });
-
-        setTimeout(() => { mapS5.invalidateSize(); }, 600);
+        marker.openPopup();
+        mapS5.setView([lat, lng], zoomLevel, { animate: true, duration: 1.0 });
       });
 
-      trackContainer.appendChild(card);
+      // B. 지도 위 마커를 클릭했을 때
+      marker.on('click', () => {
+        cardElements.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // 클릭한 카드로 하단 슬라이드 자동 스크롤
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        mapS5.setView([lat, lng], zoomLevel, { animate: true, duration: 1.0 });
+      });
     });
 
-    // 좌/우 슬라이드 버튼 이벤트 처리
-    const btnPrev = document.getElementById('sc5-btn-prev');
-    const btnNext = document.getElementById('sc5-btn-next');
+    // 모든 마커가 화면에 들어오도록 초기 카메라 자동 맞춤
+    if (allLatLngs.length > 0) {
+      setTimeout(() => {
+        mapS5.invalidateSize();
+        mapS5.fitBounds(L.latLngBounds(allLatLngs), {
+          padding: [50, 50],
+          maxZoom: 11
+        });
+      }, 500);
+    }
 
-    btnPrev.addEventListener('click', () => {
-      trackContainer.scrollBy({ left: -300, behavior: 'smooth' });
-    });
-    btnNext.addEventListener('click', () => {
-      trackContainer.scrollBy({ left: 300, behavior: 'smooth' });
-    });
+    // 슬라이드 좌/우 이동 버튼
+    document.getElementById('sc5-btn-prev').addEventListener('click', () => trackContainer.scrollBy({ left: -300, behavior: 'smooth' }));
+    document.getElementById('sc5-btn-next').addEventListener('click', () => trackContainer.scrollBy({ left: 300, behavior: 'smooth' }));
 
-  } catch (error) { console.error('Section 5 GeoJSON 로드 에러:', error); }
+  } catch (error) { console.error('Section 5 에러:', error); }
 
-  const sc5RevealObserver = new IntersectionObserver((entries) => {
+  const sc5RevealObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
+  document.querySelectorAll('.sc5-reveal').forEach(el => sc5RevealObserver.observe(el));
+}
+
+/* =======================================================
+   섹션 6: 남겨진 유산 (스크롤 페이드인 애니메이션)
+   - 역할: 화면 진입 시 '.sc6-reveal' 요소들에 'active' 클래스를 붙여 CSS 애니메이션을 발동시킵니다.
+======================================================= */
+function initSection6() {
+  const sc6RevealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) entry.target.classList.add('active');
     });
   }, { threshold: 0.15, rootMargin: "0px 0px -10% 0px" });
 
-  document.querySelectorAll('.sc5-reveal').forEach(el => sc5RevealObserver.observe(el));
+  document.querySelectorAll('.sc6-reveal').forEach(el => sc6RevealObserver.observe(el));
 }
-
-
-/* =======================================================
-   섹션 6 (남겨진 유산) 전용 스크롤 애니메이션 로직
-======================================================= */
-function initSection6() {
-  const sc6RevealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // 화면에 요소가 들어오면 'active' 클래스를 추가하여 애니메이션(페이드인 등) 실행
-        entry.target.classList.add('active');
-      }
-    });
-  }, {
-    threshold: 0.15, // 요소가 화면에 15% 이상 보일 때 작동
-    rootMargin: "0px 0px -10% 0px"
-  });
-
-  // HTML에서 'sc6-reveal' 클래스를 가진 모든 요소를 찾아 감지기에 등록
-  document.querySelectorAll('.sc6-reveal').forEach(el => {
-    sc6RevealObserver.observe(el);
-  });
-}
-
 
 /* =======================================================
    🚀 최종 메인 앱 실행 (App Initialization)
-   - 스크립트 실행의 진입점(Entry Point)
+   - 역할: 모든 스크립트와 DOM이 준비되면, 순차적으로 위에서 정의한 기능들을 부팅시킵니다.
 ======================================================= */
 async function initApp() {
   try {
     console.log("지도 API 부팅 시작...");
 
-    // 1. 서울맵 API가 모두 다운로드될 때까지 기다립니다.
     await loadSeoulMapAPI();
     console.log("✅ 스마트서울맵 API 로드 완료! 화면을 그립니다.");
 
-    // 2. 부팅이 끝나면 UI와 모든 섹션의 지도를 차례대로 깨웁니다(초기화).
     initGlobalUI();
     initSection1Maps();
     initSection2();

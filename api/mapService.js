@@ -1,21 +1,79 @@
 /* =======================================================
    API 엔드포인트(URL) 관리 객체
-   - 서울맵의 배경 타일 이미지와 테마 데이터를 불러오기 위한 주소 모음
 ======================================================= */
-const MAP_ENDPOINTS = {
-  // 1. 서울맵 배경 타일 지도 (국문 기본 지도)
-  // {z}, {j}, {k}, {x}, {y}는 Leaflet V5 확장팩에서 자동으로 현재 화면의 좌표와 줌 레벨에 맞게 변환해 줍니다.
+export const MAP_ENDPOINTS = {
   seoulBaseMap_kor: `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_kor_normal/{z}/{j}/{k}/{x}/{y}/png`,
-
-  // 2. 서울맵 배경 타일 지도 (영문 기본 지도)
   seoulBaseMap_eng: `https://map.seoul.go.kr/openapi/v5/${CONFIG.MAP_API_KEY}/public/map/base/dawul_eng_normal/{z}/{j}/{k}/{x}/{y}/png`,
-
-  // 3. 특정 테마 데이터 호출 (테마 ID: 11100550)
-  // 지정된 중심 좌표(coord_x: 126.974695, coord_y: 37.564150 - 서울시청 부근)를 기준으로 
-  // 광범위한 반경(distance=999999) 내의 데이터를 한 번에 최대 999개(page_size)까지 불러옵니다.
   themeData_11100550: `https://map.seoul.go.kr/openapi/v5/${CONFIG.THEMA_API_KEY}/public/themes/contents/ko?page_size=999&page_no=1&coord_x=126.974695&coord_y=37.564150&distance=999999&search_type=0&search_name=&theme_id=11100550&content_id=&subcate_id=`,
-
-  // 4. 특정 테마 데이터 호출 (테마 ID: 100173)
-  // 위와 동일한 검색 조건으로 다른 테마 ID(100173)에 해당하는 콘텐츠 데이터를 불러옵니다.
   themeData_100173: `https://map.seoul.go.kr/openapi/v5/${CONFIG.THEMA_API_KEY}/public/themes/contents/ko?page_size=999&page_no=1&coord_x=126.974695&coord_y=37.564150&distance=999999&search_type=0&search_name=&theme_id=100173&content_id=&subcate_id=`
 };
+
+/* =======================================================
+   도우미 함수: API 응답 데이터(JSON)를 GeoJSON 형식으로 완벽 변환
+======================================================= */
+function transformToGeoJSON(apiData) {
+  const items = apiData.body || [];
+
+  const features = items.map(item => {
+    let geomType = "Point";
+    let coords = [parseFloat(item.COT_COORD_X || 0), parseFloat(item.COT_COORD_Y || 0)];
+
+    if (item.COT_COORD_DATA && item.COT_COORD_DATA !== "[]") {
+      try {
+        const parsedPath = JSON.parse(item.COT_COORD_DATA);
+
+        if (Array.isArray(parsedPath) && parsedPath.length > 0) {
+          // 💡 수정된 부분: 배열 안의 첫 번째 요소가 배열인지 확인하여 '선'과 '점'을 정확히 구분합니다.
+          if (Array.isArray(parsedPath[0])) {
+            geomType = "LineString";
+            coords = parsedPath;
+          } else {
+            geomType = "Point";
+            // 점 데이터일 경우 기본 좌표값을 그대로 사용
+          }
+        }
+      } catch (e) {
+        console.warn("경로 데이터 파싱 실패:", e);
+      }
+    }
+
+    return {
+      type: "Feature",
+      id: item.COT_CONTS_ID,
+      properties: item,
+      geometry: {
+        type: geomType,
+        coordinates: coords
+      }
+    };
+  });
+
+  return { type: "FeatureCollection", features };
+}
+
+/* =======================================================
+   데이터 호출 함수 
+======================================================= */
+export async function fetchTimeTravelData() {
+  try {
+    const response = await fetch(MAP_ENDPOINTS.themeData_11100550);
+    if (!response.ok) throw new Error("시간여행 테마 API 통신 에러");
+    const data = await response.json();
+    return transformToGeoJSON(data);
+  } catch (error) {
+    console.error("데이터 로드 실패:", error);
+    return { type: "FeatureCollection", features: [] };
+  }
+}
+
+export async function fetchDailyLifeData() {
+  try {
+    const response = await fetch(MAP_ENDPOINTS.themeData_100173);
+    if (!response.ok) throw new Error("생활속현장 테마 API 통신 에러");
+    const data = await response.json();
+    return transformToGeoJSON(data);
+  } catch (error) {
+    console.error("데이터 로드 실패:", error);
+    return { type: "FeatureCollection", features: [] };
+  }
+}

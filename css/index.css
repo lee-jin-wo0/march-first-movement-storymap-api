@@ -174,7 +174,7 @@ body,
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 4px solid rgba(255, 0, 0, 0.3);
   background-color: transparent;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -541,7 +541,7 @@ body,
   width: 100%;
   height: 100%;
   background: #0e0e0e;
-  filter: grayscale(100%) brightness(0.8);
+  filter: grayscale(100%) brightness(0.95);
 }
 
 .sc1-chapter-num {
@@ -690,7 +690,7 @@ body,
 .sc2-map-inner {
   width: 100%;
   height: 100%;
-  filter: grayscale(100%) brightness(0.8);
+  filter: grayscale(100%) brightness(0.95);
 }
 
 .sc2-map-shadow {
@@ -935,7 +935,7 @@ body,
 .sc3-map-inner {
   width: 100%;
   height: 100%;
-  filter: grayscale(100%) brightness(0.8);
+  filter: grayscale(100%) brightness(0.95);
 }
 
 .sc3-map-shadow {
@@ -1275,7 +1275,7 @@ body,
 }
 
 #map-s4 .leaflet-tile-pane {
-  filter: grayscale(100%) brightness(0.8);
+  filter: grayscale(100%) brightness(0.95);
   transition: filter 0.3s ease;
 }
 
@@ -1499,7 +1499,7 @@ body,
 }
 
 #map-s5 .leaflet-tile-pane {
-  filter: grayscale(100%) brightness(0.8);
+  filter: grayscale(100%) brightness(0.95);
   transition: filter 0.3s ease;
 }
 
