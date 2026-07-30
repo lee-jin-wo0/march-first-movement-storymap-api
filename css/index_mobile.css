@@ -1,0 +1,306 @@
+@charset "utf-8";
+
+/* =======================================================
+   모바일 전용 스타일시트 (Mobile Only)
+======================================================= */
+
+/* --- [공통] 스토리 섹션 & 헤더 --- */
+@media (max-width: 767px) {
+  .story-title {
+    font-size: 2.25rem;
+  }
+}
+
+/* --- [공통] 플로팅 TOP 버튼 --- */
+@media (max-width: 767px) {
+  .floating-top-btn {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* --- [공통] Footer --- */
+@media (max-width: 767px) {
+  .site-footer {
+    padding: 3rem 1.5rem 3rem 1.5rem;
+  }
+
+  .footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .footer-copyright {
+    text-align: left;
+  }
+}
+
+/* --- Section 0: 대문 --- */
+@media (max-width: 560px) {
+  .sc0-hero-title {
+    font-size: clamp(3.4rem, 22vw, 5.8rem);
+  }
+}
+
+/* --- Section 1: 교차 레이아웃 --- */
+@media (max-width: 768px) {
+
+  .sc1-split-layout,
+  .sc1-split-layout.reverse {
+    grid-template-columns: 1fr;
+  }
+
+  .sc1-split-layout.reverse .sc1-split-text {
+    order: 1;
+  }
+
+  .sc1-split-layout.reverse .sc1-split-visual {
+    order: 2;
+  }
+
+  .sc1-split-visual {
+    min-height: 400px;
+  }
+}
+
+/* --- Section 2: 거사의 맹세 --- */
+@media (max-width: 767px) {
+  .sc2-map-pane {
+    height: 45vh;
+    position: sticky;
+    top: 55vh;
+    bottom: 0;
+    z-index: 20;
+    overflow: hidden;
+  }
+
+  .sc2-map-inner {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .sc2-timeline-pane {
+    padding: 5vh 1rem 60vh 1rem;
+  }
+
+  .sc2-timeline-item {
+    padding: 1.2rem 1rem;
+    background-color: #131210;
+    border-radius: 0.75rem;
+    max-width: 100%;
+  }
+
+  .sc2-item-date {
+    font-size: 0.7rem;
+    margin-bottom: 0.4rem;
+    color: var(--gold);
+  }
+
+  .sc2-item-title {
+    font-size: 1.15rem;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+  }
+
+  .sc2-item-img {
+    max-height: 110px;
+    margin-bottom: 0.75rem;
+  }
+
+  .sc2-item-desc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: rgba(238, 230, 216, 0.9);
+    word-break: keep-all;
+  }
+
+  .sc2-marker-circle {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* --- Section 3: 함성의 궤적 --- */
+@media (max-width: 767px) {
+  .sc3-map-pane {
+    height: 45vh !important;
+    position: sticky !important;
+    top: 55vh !important;
+    bottom: 0 !important;
+    z-index: 20 !important;
+    border-top: 2px solid #131210 !important;
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .sc3-map-inner {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+
+  .sc3-timeline-pane {
+    padding: 5vh 1rem 60vh 1rem !important;
+    z-index: 10 !important;
+  }
+
+  .sc3-timeline-list {
+    gap: 70vh !important;
+  }
+
+  .sc3-timeline-item {
+    padding: 1.2rem 1rem !important;
+    background-color: #131210 !important;
+    border-radius: 0.75rem !important;
+    max-width: 100% !important;
+  }
+
+  .sc3-item-title {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .sc3-item-desc {
+    font-size: 0.85rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .sc3-route-box {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .sc3-route-label {
+    font-size: 0.8rem !important;
+  }
+
+  .sc3-route-val {
+    font-size: 0.85rem !important;
+  }
+
+  .sc3-point-label {
+    font-size: 9px !important;
+    padding: 2px 6px !important;
+  }
+
+  .sc3-point-dot {
+    width: 10px !important;
+    height: 10px !important;
+  }
+}
+
+/* --- Section 4: 역사의 현장 --- */
+@media (max-width: 767px) {
+  .sc4-intro-view {
+    padding: 5rem 1.5rem;
+    min-height: 100vh;
+  }
+
+  .sc4-intro-chap {
+    font-size: 0.7rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sc4-intro-title {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+  }
+
+  .sc4-intro-divider {
+    margin: 0 auto 2.5rem auto;
+  }
+
+  .sc4-intro-cols {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .sc4-col-title {
+    font-size: 1.15rem;
+    margin-bottom: 1rem;
+  }
+
+  .sc4-col-desc {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .sc4-map-view {
+    height: 100vh;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    overflow: hidden;
+  }
+
+  .sc4-legend {
+    bottom: 1.5rem;
+    left: 1.5rem;
+    right: auto;
+    min-width: max-content;
+    padding: 1rem;
+  }
+
+  .sc4-legend-list {
+    gap: 0.8rem;
+    margin-bottom: 0;
+  }
+
+  .sc4-legend-text strong {
+    font-size: 0.85rem;
+  }
+
+  .sc4-legend-text span {
+    font-size: 0.7rem;
+  }
+}
+
+/* --- Section 5: 독립의 별들 --- */
+@media (max-width: 768px) {
+  .sc5-card {
+    flex: 0 0 160px;
+  }
+
+  .sc5-card-img {
+    height: 100px;
+  }
+
+  .sc5-popup-inner {
+    max-width: 240px;
+  }
+}
+
+/* --- Section 6: 남겨진 유산 --- */
+@media (max-width: 900px) {
+  .sc6-card-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .sc6-quote-main {
+    font-size: 1.1rem;
+  }
+
+  .sc6-quote-sub {
+    font-size: 0.9rem;
+  }
+
+  .sc6-quote-bg-num {
+    font-size: 7rem;
+  }
+
+  .sc6-quote-box {
+    padding: 2.5rem 1.5rem;
+  }
+}
