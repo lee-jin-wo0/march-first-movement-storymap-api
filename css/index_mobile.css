@@ -70,6 +70,16 @@
   .sc1-split-visual {
     min-height: 400px;
   }
+
+  .sc1-pagination {
+    bottom: 1.5rem;
+    /* 모바일에서는 하단 여백 축소 */
+  }
+
+  .sc1-dot {
+    width: 10px;
+    height: 10px;
+  }
 }
 
 /* --- Section 2: 거사의 맹세 --- */
@@ -131,6 +141,36 @@
     height: 1.5rem;
     font-size: 0.75rem;
   }
+
+  /* 모바일 카드 고정 영역 수정 */
+  .sc2-sticky-card-container {
+    position: sticky;
+    top: 0;
+    height: 55vh;
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    /* 가로로 배치 */
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  /* 모바일 사이드 내비게이션 최적화 */
+  .sc2-side-nav {
+    gap: 0.3rem;
+  }
+
+  .sc2-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+  }
+
+  .sc2-fixed-card {
+    padding: 1.5rem 1rem;
+    min-height: auto;
+  }
 }
 
 /* --- Section 3: 함성의 궤적 --- */
@@ -151,20 +191,32 @@
     left: 0 !important;
   }
 
-  .sc3-timeline-pane {
-    padding: 5vh 1rem 60vh 1rem !important;
-    z-index: 10 !important;
+  /* 모바일 카드 및 사이드 탭 최적화 */
+  .sc3-sticky-card-container {
+    position: sticky;
+    top: 0;
+    height: 55vh;
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.8rem;
   }
 
-  .sc3-timeline-list {
-    gap: 70vh !important;
+  .sc3-fixed-card {
+    padding: 1.5rem 1rem;
+    min-height: auto;
   }
 
-  .sc3-timeline-item {
-    padding: 1.2rem 1rem !important;
-    background-color: #131210 !important;
-    border-radius: 0.75rem !important;
-    max-width: 100% !important;
+  .sc3-side-nav {
+    gap: 0.3rem;
+  }
+
+  .sc3-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+    border-radius: 6px;
   }
 
   .sc3-item-title {
@@ -264,20 +316,59 @@
   .sc4-legend-text span {
     font-size: 0.7rem;
   }
+
+  .sc4-reset-btn {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
+  }
 }
 
 /* --- Section 5: 독립의 별들 --- */
 @media (max-width: 768px) {
   .sc5-card {
-    flex: 0 0 160px;
+    /* 수정 전: flex: 0 0 160px; */
+    flex: 0 0 120px;
+    /* 모바일에서 카드 너비 더 축소 */
   }
 
   .sc5-card-img {
-    height: 100px;
+    /* 수정 전: height: 100px; */
+    height: 80px;
+    /* 모바일에서 사진 높이 더 축소 */
   }
 
   .sc5-popup-inner {
     max-width: 240px;
+  }
+
+  .sc5-search-wrapper {
+    top: 1rem;
+    left: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sc5-search-panel {
+    padding: 1rem;
+  }
+
+  .sc5-filter-container {
+    max-width: 260px;
+    gap: 0.3rem;
+  }
+
+  .sc5-filter-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .sc5-reset-btn {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
   }
 }
 

@@ -75,119 +75,125 @@
       </div>
     </header>
 
-    <!-- 배경 1: 일제강점기의 통치 구조 (텍스트-지도 분할 레이아웃) -->
-    <div class="sc1-split-layout">
-      <div class="sc1-split-text">
-        <div class="sc1-chapter-num">01</div>
-        <p class="sc1-section-label sc1-reveal">배경 · BACKGROUND</p>
-        <h2 class="sc1-section-heading-ko sc1-reveal">일제강점기의<br />통치 구조</h2>
-        <p class="sc1-section-heading-en sc1-reveal">Colonial Rule, 1910 - 1919</p>
+    <!-- 슬라이더 전체 래퍼 -->
+    <div class="sc1-slider-wrapper">
 
-        <div class="sc1-divider sc1-reveal">
-          <div class="sc1-divider-line"></div>
-          <div class="sc1-divider-diamond"></div>
-          <div class="sc1-divider-line"></div>
-        </div>
-
-        <div class="sc1-section-body sc1-reveal">
-          <p class="ko-text sc1-desc-text">
-            1910년 한일병합조약으로 조선은 일제에 강제 합병되었다.
-            조선총독부는 헌병경찰제도를 운영하며 언론·출판·집회를 금지했고, 재판 없이 즉결처분을 집행하는 등 가혹한 무단 통치를 이어갔다.
-          </p>
-        </div>
-      </div>
-      <!-- 첫 번째 배경 지도 렌더링 컨테이너 -->
-      <div class="sc1-split-visual">
-        <div class="sc1-map-container" id="map-s1-1"></div>
-      </div>
-    </div>
-
-    <!-- 배경 2: 고종 황제 붕어 (좌우 반전 레이아웃: reverse 클래스 사용) -->
-    <div class="sc1-split-layout reverse">
-      <div class="sc1-split-text">
-        <div class="sc1-chapter-num">02</div>
-        <p class="sc1-section-label sc1-reveal">기폭제 · CATALYST</p>
-        <h2 class="sc1-section-heading-ko sc1-reveal">고종 황제 붕어와<br />민중의 분노</h2>
-        <p class="sc1-section-heading-en sc1-reveal">Death of Emperor Gojong, 1919</p>
-
-        <div class="sc1-divider sc1-reveal">
-          <div class="sc1-divider-line"></div>
-          <div class="sc1-divider-diamond"></div>
-          <div class="sc1-divider-line"></div>
-        </div>
-
-        <div class="sc1-section-body sc1-reveal">
-          <p class="ko-text sc1-desc-text">
-            1919년 1월, 고종 황제가 덕수궁에서 갑작스럽게 세상을 떠났다.
-            일제에 의한 독살 의혹이 빠르게 퍼지며 슬픔에 빠진 민중들의 분노는 거대한 독립운동이 조직화되는 결정적인 도화선이 되었다.
-          </p>
-        </div>
-      </div>
-      <!-- 두 번째 배경 지도 렌더링 컨테이너 -->
-      <div class="sc1-split-visual">
-        <div class="sc1-map-container" id="map-s1-2"></div>
-      </div>
-    </div>
-
-    <!-- 배경 3: 민족자결주의 (인용문 디자인 포함) -->
-    <div class="sc1-split-layout">
-      <div class="sc1-split-text">
-        <div class="sc1-chapter-num">03</div>
-        <p class="sc1-section-label sc1-reveal">희망 · HOPE</p>
-        <h2 class="sc1-section-heading-ko sc1-reveal">세계를 향한 외침,<br />민족자결주의</h2>
-        <p class="sc1-section-heading-en sc1-reveal">Paris Peace Conference, 1919</p>
-
-        <div class="sc1-divider sc1-reveal">
-          <div class="sc1-divider-line"></div>
-          <div class="sc1-divider-diamond"></div>
-          <div class="sc1-divider-line"></div>
-        </div>
-
-        <div class="sc1-section-body sc1-reveal">
-          <p class="ko-text sc1-desc-text sc1-margin-b">
-            제1차 세계대전 직후 열린 파리 강화회의에서 미국 우드로 윌슨 대통령이 '민족자결주의'를 제창했다. 이는 식민 지배에 신음하던 우리 민족에게 독립에 대한 흔들리지 않는
-            희망과 명분을 제공했다.
-          </p>
-
-          <!-- 인용구 디자인 블록 -->
-          <div class="sc1-quote-box">
-            <p class="sc1-quote-ko">"각 민족은 스스로의 운명을 결정할 권리가 있다" — 우드로 윌슨, 1918</p>
-            <p class="sc1-quote-en">"Every people has the right to determine its own destiny" — Woodrow
-              Wilson, 1918</p>
+      <!-- 슬라이드 1: 배경 -->
+      <div class="sc1-slide active">
+        <div class="sc1-split-layout">
+          <div class="sc1-split-text">
+            <div class="sc1-chapter-num">01</div>
+            <p class="sc1-section-label">배경 · BACKGROUND</p>
+            <h2 class="sc1-section-heading-ko">일제강점기의<br />통치 구조</h2>
+            <p class="sc1-section-heading-en">Colonial Rule, 1910 - 1919</p>
+            <div class="sc1-divider">
+              <div class="sc1-divider-line"></div>
+              <div class="sc1-divider-diamond"></div>
+              <div class="sc1-divider-line"></div>
+            </div>
+            <div class="sc1-section-body">
+              <p class="ko-text sc1-desc-text">
+                1910년 한일병합조약으로 조선은 일제에 강제 합병되었다. 조선총독부는 헌병경찰제도를 운영하며 언론·출판·집회를 금지했고, 가혹한 무단 통치를 이어갔다.
+              </p>
+            </div>
+          </div>
+          <div class="sc1-split-visual">
+            <div class="sc1-map-container" id="map-s1-1"></div>
           </div>
         </div>
       </div>
-      <!-- 세 번째 배경 지도 렌더링 컨테이너 -->
-      <div class="sc1-split-visual">
-        <div class="sc1-map-container" id="map-s1-3"></div>
-      </div>
-    </div>
 
-    <!-- 배경 4: 2.8 독립선언 -->
-    <div class="sc1-split-layout reverse">
-      <div class="sc1-split-text">
-        <div class="sc1-chapter-num">04</div>
-        <p class="sc1-section-label sc1-reveal">결의 · RESOLVE</p>
-        <h2 class="sc1-section-heading-ko sc1-reveal">적의 심장부에서<br />독립을 선언하다</h2>
-        <p class="sc1-section-heading-en sc1-reveal">February 8th Declaration, 1919</p>
-
-        <div class="sc1-divider sc1-reveal">
-          <div class="sc1-divider-line"></div>
-          <div class="sc1-divider-diamond"></div>
-          <div class="sc1-divider-line"></div>
-        </div>
-
-        <div class="sc1-section-body sc1-reveal">
-          <p class="ko-text sc1-desc-text">
-            파리강화회의 소식에 고무된 일본 도쿄의 조선 유학생들은 YMCA 회관에 모여 '조선청년독립단'을 결성하고 2·8 독립선언서를 낭독했다.
-            이들의 꺾이지 않는 투지는 국내 동포들을 일깨우며 3·1운동의 직접적인 전초전이 되었다.
-          </p>
+      <!-- 슬라이드 2: 기폭제 (리버스) -->
+      <div class="sc1-slide">
+        <div class="sc1-split-layout reverse">
+          <div class="sc1-split-text">
+            <div class="sc1-chapter-num">02</div>
+            <p class="sc1-section-label">기폭제 · CATALYST</p>
+            <h2 class="sc1-section-heading-ko">고종 황제 붕어와<br />민중의 분노</h2>
+            <p class="sc1-section-heading-en">Death of Emperor Gojong, 1919</p>
+            <div class="sc1-divider">
+              <div class="sc1-divider-line"></div>
+              <div class="sc1-divider-diamond"></div>
+              <div class="sc1-divider-line"></div>
+            </div>
+            <div class="sc1-section-body">
+              <p class="ko-text sc1-desc-text">
+                1919년 1월, 고종 황제가 덕수궁에서 갑작스럽게 세상을 떠났다. 독살 의혹이 빠르게 퍼지며 슬픔에 빠진 민중들의 분노는 거대한 독립운동의 도화선이 되었다.
+              </p>
+            </div>
+          </div>
+          <div class="sc1-split-visual">
+            <div class="sc1-map-container" id="map-s1-2"></div>
+          </div>
         </div>
       </div>
-      <!-- 네 번째 배경 지도 렌더링 컨테이너 -->
-      <div class="sc1-split-visual">
-        <div class="sc1-map-container" id="map-s1-4"></div>
+
+      <!-- 슬라이드 3: 희망 -->
+      <div class="sc1-slide">
+        <div class="sc1-split-layout">
+          <div class="sc1-split-text">
+            <div class="sc1-chapter-num">03</div>
+            <p class="sc1-section-label">희망 · HOPE</p>
+            <h2 class="sc1-section-heading-ko">세계를 향한 외침,<br />민족자결주의</h2>
+            <p class="sc1-section-heading-en">Paris Peace Conference, 1919</p>
+            <div class="sc1-divider">
+              <div class="sc1-divider-line"></div>
+              <div class="sc1-divider-diamond"></div>
+              <div class="sc1-divider-line"></div>
+            </div>
+            <div class="sc1-section-body">
+              <p class="ko-text sc1-desc-text sc1-margin-b">
+                제1차 세계대전 직후 미국 우드로 윌슨 대통령이 '민족자결주의'를 제창했다. 이는 식민 지배에 신음하던 우리 민족에게 독립에 대한 희망을 제공했다.
+              </p>
+              <div class="sc1-quote-box">
+                <p class="sc1-quote-ko">"각 민족은 스스로의 운명을 결정할 권리가 있다"</p>
+              </div>
+            </div>
+          </div>
+          <div class="sc1-split-visual">
+            <div class="sc1-map-container" id="map-s1-3"></div>
+          </div>
+        </div>
       </div>
+
+      <!-- 슬라이드 4: 결의 (리버스) -->
+      <div class="sc1-slide">
+        <div class="sc1-split-layout reverse">
+          <div class="sc1-split-text">
+            <div class="sc1-chapter-num">04</div>
+            <p class="sc1-section-label">결의 · RESOLVE</p>
+            <h2 class="sc1-section-heading-ko">적의 심장부에서<br />독립을 선언하다</h2>
+            <p class="sc1-section-heading-en">February 8th Declaration, 1919</p>
+            <div class="sc1-divider">
+              <div class="sc1-divider-line"></div>
+              <div class="sc1-divider-diamond"></div>
+              <div class="sc1-divider-line"></div>
+            </div>
+            <div class="sc1-section-body">
+              <p class="ko-text sc1-desc-text">
+                일본 도쿄의 조선 유학생들은 YMCA 회관에 모여 '조선청년독립단'을 결성하고 2·8 독립선언서를 낭독했다. 이들의 투지는 3·1운동의 전초전이 되었다.
+              </p>
+            </div>
+          </div>
+          <div class="sc1-split-visual">
+            <div class="sc1-map-container" id="map-s1-4"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 하단 인디케이터(페이지 점) 및 멈춤/재생 버튼 -->
+      <div class="sc1-pagination">
+        <div class="sc1-dots">
+          <button class="sc1-dot active" data-index="0" aria-label="Slide 1"></button>
+          <button class="sc1-dot" data-index="1" aria-label="Slide 2"></button>
+          <button class="sc1-dot" data-index="2" aria-label="Slide 3"></button>
+          <button class="sc1-dot" data-index="3" aria-label="Slide 4"></button>
+        </div>
+        <button class="sc1-play-btn" id="sc1-play-pause" aria-label="자동재생 정지">
+          <span class="material-symbols-outlined">||</span>
+        </button>
+      </div>
+
     </div>
   </section>
 
@@ -218,9 +224,23 @@
         <!-- 지도 위의 그라데이션 그림자 효과 (시각적 깊이감 제공) -->
         <div class="sc2-map-shadow"></div>
       </div>
-      <!-- 타임라인 스크롤 영역 -->
+      <!-- 타임라인 스크롤 영역 (고정 카드 프레임 + 투명 스크롤 트랙) -->
       <div class="sc2-timeline-pane" id="sc2-timeline-container">
-        <div class="sc2-timeline-list" id="sc2-timeline-list"></div>
+        <!-- 화면에 고정될 컨테이너 (사이드 메뉴 + 검은색 카드) -->
+        <div class="sc2-sticky-card-container">
+
+          <!-- 🌟 새롭게 추가되는 왼쪽 숫자 내비게이션 메뉴 -->
+          <div class="sc2-side-nav" id="sc2-side-nav">
+            <!-- JS를 통해 1~9 버튼이 이곳에 생성됩니다 -->
+          </div>
+
+          <div class="sc2-fixed-card">
+            <!-- 스크롤 시 이 영역의 내용이 JS에 의해 교체됩니다 -->
+            <div id="sc2-card-content"></div>
+          </div>
+        </div>
+        <!-- 실제로 스크롤을 발생시키는 투명한 영역 -->
+        <div class="sc2-scroll-track" id="sc2-scroll-track"></div>
       </div>
     </div>
   </section>
@@ -245,13 +265,27 @@
     </header>
 
     <!-- 섹션 2와 동일한 지도 + 타임라인 레이아웃 구조 사용 -->
+    <!-- [섹션 3: 3.1운동의 확산] 지도 + 타임라인 레이아웃 구조 -->
     <div class="sc3-content-wrap">
       <div class="sc3-map-pane">
         <div class="sc3-map-inner" id="map-s3"></div>
         <div class="sc3-map-shadow"></div>
       </div>
+
+      <!-- 타임라인 스크롤 영역 (고정 카드 프레임 + 투명 스크롤 트랙) -->
       <div class="sc3-timeline-pane" id="sc3-timeline-container">
-        <div class="sc3-timeline-list" id="sc3-timeline-list"></div>
+        <!-- 화면에 고정될 컨테이너 (사이드 메뉴 + 검은색 카드) -->
+        <div class="sc3-sticky-card-container">
+          <div class="sc3-side-nav" id="sc3-side-nav">
+            <!-- JS를 통해 버튼이 생성됩니다 -->
+          </div>
+          <div class="sc3-fixed-card">
+            <!-- 내용이 교체될 영역 -->
+            <div id="sc3-card-content"></div>
+          </div>
+        </div>
+        <!-- 투명 스크롤 영역 -->
+        <div class="sc3-scroll-track" id="sc3-scroll-track"></div>
       </div>
     </div>
   </section>
@@ -311,17 +345,23 @@
     <div class="sc4-map-view">
       <div id="map-s4" class="sc4-map-container"></div>
 
-      <!-- 지도에 표시된 마커들의 의미를 설명하는 범례(Legend) -->
+      <button class="sc4-reset-btn" id="sc4-reset-btn" aria-label="전체 보기">
+        <span class="material-symbols-outlined">전체 보기</span>
+      </button>
+
+      <!-- 지도에 표시된 마커들의 의미를 설명하고 필터링하는 범례(Legend) -->
       <div class="sc4-legend sc4-reveal">
-        <ul class="sc4-legend-list">
-          <li>
+        <ul class="sc4-legend-list" id="sc4-filter-list">
+          <!-- 중요 지점 필터 버튼 -->
+          <li class="active" data-filter="hub" tabindex="0" role="button">
             <div class="sc4-legend-dot hub-dot"></div>
             <div class="sc4-legend-text">
               <strong>중요 지점</strong>
               <span>거사 기획 및 준비 거점</span>
             </div>
           </li>
-          <li>
+          <!-- 시위 장소 필터 버튼 -->
+          <li class="active" data-filter="site" tabindex="0" role="button">
             <div class="sc4-legend-dot site-dot"></div>
             <div class="sc4-legend-text">
               <strong>시위 장소</strong>
@@ -355,6 +395,40 @@
     <!-- 배경 지도 위에 인물 슬라이더(캐러셀)가 오버레이되는 구조 -->
     <div class="sc5-map-view">
       <div id="map-s5" class="sc5-map-container"></div>
+
+      <button class="sc5-reset-btn" id="sc5-reset-btn" aria-label="전체 보기">
+        <span class="material-symbols-outlined">전체 보기</span>
+      </button>
+
+      <div class="sc5-search-wrapper sc5-reveal">
+        <!-- 토글 버튼 -->
+        <button class="sc5-search-toggle" id="sc5-search-toggle" aria-label="검색 열기">
+          <span class="material-symbols-outlined">검색</span>
+        </button>
+
+        <!-- 확장되는 패널 (입력창 + 초성버튼) -->
+        <div class="sc5-search-panel" id="sc5-search-panel">
+          <input type="text" id="sc5-search-input" class="sc5-search-input" placeholder="인물 이름 검색..." autocomplete="off">
+
+          <div class="sc5-filter-container">
+            <button class="sc5-filter-btn active" data-filter="all">전체</button>
+            <button class="sc5-filter-btn" data-filter="ㄱ">ㄱ</button>
+            <button class="sc5-filter-btn" data-filter="ㄴ">ㄴ</button>
+            <button class="sc5-filter-btn" data-filter="ㄷ">ㄷ</button>
+            <button class="sc5-filter-btn" data-filter="ㄹ">ㄹ</button>
+            <button class="sc5-filter-btn" data-filter="ㅁ">ㅁ</button>
+            <button class="sc5-filter-btn" data-filter="ㅂ">ㅂ</button>
+            <button class="sc5-filter-btn" data-filter="ㅅ">ㅅ</button>
+            <button class="sc5-filter-btn" data-filter="ㅇ">ㅇ</button>
+            <button class="sc5-filter-btn" data-filter="ㅈ">ㅈ</button>
+            <button class="sc5-filter-btn" data-filter="ㅊ">ㅊ</button>
+            <button class="sc5-filter-btn" data-filter="ㅋ">ㅋ</button>
+            <button class="sc5-filter-btn" data-filter="ㅌ">ㅌ</button>
+            <button class="sc5-filter-btn" data-filter="ㅍ">ㅍ</button>
+            <button class="sc5-filter-btn" data-filter="ㅎ">ㅎ</button>
+          </div>
+        </div>
+      </div>
 
       <!-- 인물 정보를 넘겨볼 수 있는 좌/우 버튼과 트랙 래퍼 -->
       <div class="sc5-carousel-wrapper sc5-reveal">

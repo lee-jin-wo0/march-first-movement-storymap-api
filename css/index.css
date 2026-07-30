@@ -474,6 +474,88 @@ body,
   order: 1;
 }
 
+.sc1-slider-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  position: relative;
+  width: 100%;
+}
+
+.sc1-slide {
+  grid-column: 1;
+  grid-row: 1;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+  z-index: 1;
+}
+
+.sc1-slide.active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 5;
+}
+
+/* 슬라이더 인디케이터 및 버튼 래퍼 */
+.sc1-pagination {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  /* 점들과 정지 버튼 사이의 간격 */
+  z-index: 10;
+}
+
+.sc1-dots {
+  display: flex;
+  gap: 1rem;
+}
+
+.sc1-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: rgba(255, 87, 87, 0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sc1-dot:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.sc1-dot.active {
+  background-color: var(--red);
+  transform: scale(1.3);
+}
+
+/* 재생/일시정지 버튼 스타일 */
+.sc1-play-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 69, 69, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  padding: 0;
+}
+
+.sc1-play-btn:hover {
+  color: #ffffff;
+}
+
+.sc1-play-btn span {
+  font-size: 1.5rem;
+  /* 아이콘 크기 */
+}
+
 .sc1-split-text {
   display: flex;
   flex-direction: column;
@@ -636,25 +718,79 @@ body,
   z-index: 2;
 }
 
+/* 타임라인 스크롤 컨테이너 */
 .sc2-timeline-pane {
   grid-column: 1;
   grid-row: 1;
   position: relative;
   z-index: 10;
   width: 100%;
-  padding: 50vh 2rem 50vh 10%;
-  /* PC 기준 좌측 패딩 적용 */
   pointer-events: none;
+  /* 클릭이 지도로 통과되도록 허용 */
 }
 
-.sc2-timeline-list {
+/* 카드를 뷰포트에 고정할 영역 (Sticky) */
+.sc2-sticky-card-container {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-left: 8%;
+  /* 약간 줄여서 공간 확보 */
+  gap: 1.5rem;
+  /* 🌟 내비게이션 메뉴와 카드 사이의 간격 */
+  z-index: 11;
+}
+
+/* 🌟 새로 추가하는 사이드 내비게이션 (숫자 아코디언/탭) 스타일 */
+.sc2-side-nav {
   display: flex;
   flex-direction: column;
-  gap: 80vh;
+  gap: 0.5rem;
+  pointer-events: auto;
+  /* 마우스 클릭 허용 */
 }
 
-.sc2-timeline-item {
+.sc2-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  /* 둥근 사각형 형태 */
+  background-color: rgba(14, 14, 14, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sc2-nav-btn:hover {
+  background-color: rgba(168, 50, 40, 0.4);
+  /* 호버 시 옅은 붉은색 */
+  color: #ffffff;
+}
+
+.sc2-nav-btn.active {
+  background-color: var(--red);
+  /* 활성화 시 붉은색 */
+  color: #ffffff;
+  border-color: var(--red);
+  transform: translateX(10px);
+  /* 활성화 시 오른쪽으로 살짝 튀어나오는 아코디언 효과 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 검은색 바탕의 고정된 카드 프레임 */
+.sc2-fixed-card {
   pointer-events: auto;
+  /* 카드 내부 텍스트는 드래그 가능하게 */
   background-color: rgba(14, 14, 14, 0.85);
   backdrop-filter: blur(8px);
   padding: 2.5rem;
@@ -663,7 +799,36 @@ body,
   width: 100%;
   max-width: 450px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-  cursor: default;
+  min-height: 520px;
+  /* 내용 교체 시 카드가 덜컹거리지 않도록 최소 높이 지정 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 카드 내용 전환을 위한 페이드 효과 */
+#sc2-card-content {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+}
+
+#sc2-card-content.fade-out {
+  opacity: 0;
+}
+
+/* 스크롤 이벤트를 발생시키는 투명 트랙 */
+.sc2-scroll-track {
+  position: relative;
+  z-index: 10;
+  padding: 30vh 0 70vh 0;
+  /* 시작과 끝 스크롤 여유 공간 */
+}
+
+/* 각 타임라인 장소별 스크롤 포인트 */
+.sc2-scroll-step {
+  height: 80vh;
+  /* 마커가 변경되는 스크롤 간격 */
+  width: 100%;
 }
 
 .sc2-item-date {
@@ -771,6 +936,7 @@ body,
   background-color: rgba(0, 0, 0, 1);
   color: #ffffff;
   box-shadow: 0 0 15px rgba(12, 4, 4, 0.8);
+  transform: scale(1.5);
 }
 
 .sc2-tooltip-dimmed {
@@ -810,6 +976,9 @@ body,
 .sc3-map-inner {
   width: 100%;
   height: 100%;
+}
+
+#map-s3 .leaflet-tile-pane {
   filter: grayscale(100%) brightness(0.95);
 }
 
@@ -821,24 +990,31 @@ body,
   z-index: 2;
 }
 
+/* 타임라인 스크롤 컨테이너 */
 .sc3-timeline-pane {
   grid-column: 1;
   grid-row: 1;
   position: relative;
   z-index: 10;
   width: 100%;
-  padding: 50vh 2rem 50vh 10%;
-  /* PC 좌측 패딩 적용 */
   pointer-events: none;
 }
 
-.sc3-timeline-list {
+/* 카드를 뷰포트에 고정할 영역 (Sticky) */
+.sc3-sticky-card-container {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
-  gap: 80vh;
+  align-items: center;
+  padding-left: 8%;
+  gap: 1.5rem;
+  z-index: 11;
 }
 
-.sc3-timeline-item {
+/* 검은색 바탕의 고정된 카드 프레임 */
+.sc3-fixed-card {
   pointer-events: auto;
   background-color: rgba(14, 14, 14, 0.85);
   backdrop-filter: blur(8px);
@@ -848,7 +1024,71 @@ body,
   width: 100%;
   max-width: 450px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-  cursor: default;
+  min-height: 400px;
+  /* 섹션 3 카드 최소 높이 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* 카드 내용 페이드 효과 */
+#sc3-card-content {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 1;
+}
+
+#sc3-card-content.fade-out {
+  opacity: 0;
+}
+
+/* 🌟 사이드 내비게이션 (섹션 2와 동일 구조) */
+.sc3-side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: auto;
+}
+
+.sc3-nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: rgba(14, 14, 14, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sc3-nav-btn:hover {
+  background-color: rgba(168, 50, 40, 0.4);
+  color: #ffffff;
+}
+
+.sc3-nav-btn.active {
+  background-color: var(--red);
+  color: #ffffff;
+  border-color: var(--red);
+  transform: translateX(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 스크롤 트랙 */
+.sc3-scroll-track {
+  position: relative;
+  z-index: 10;
+  padding: 30vh 0 70vh 0;
+}
+
+.sc3-scroll-step {
+  height: 80vh;
+  width: 100%;
 }
 
 .sc3-item-title {
@@ -983,6 +1223,25 @@ body,
 
 #map-s3 .leaflet-container {
   background: transparent !important;
+}
+
+#map-s3 path.sc3-draw-path-active {
+  /* 선이 연결되는 부분을 둥글게 처리하여 더 부드럽게 보이게 합니다 */
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* 애니메이션 무한 반복 (1초마다 선이 한 칸씩 이동) */
+  animation: sc3-flow-dash 1s linear infinite;
+}
+
+/* 점선 간격(15+15=30)에 맞춰 30에서 0으로 이동시키면 자연스럽게 흐릅니다 */
+@keyframes sc3-flow-dash {
+  from {
+    stroke-dashoffset: 30;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 
@@ -1154,48 +1413,75 @@ body,
   justify-content: center;
 }
 
+/* 🌟 섹션 4: 커스텀 이미지 마커 */
 .sc4-pulse-hub,
 .sc4-pulse-site {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   position: relative;
+  z-index: 2;
+  /* 이미지를 파동보다 앞으로 */
 }
 
+/* 중요 지점: 첫 번째 별 모양 핀 이미지 */
 .sc4-pulse-hub {
-  background-color: var(--red);
+  background-image: url('../assets/images/marker_theme_11100550_3.png');
 }
 
-.sc4-pulse-hub::after {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  border: 2px solid var(--red);
-  animation: pulse-red 2s infinite ease-out;
-}
-
+/* 시위 장소: 두 번째 폭발/스파크 모양 이미지 */
 .sc4-pulse-site {
-  background-color: var(--gold);
+  background-image: url('../assets/images/marker_theme_11100550_4.png');
 }
 
+/* 🌟 마커 뒤에서 퍼져나가는 펄스(파동) 애니메이션 */
+.sc4-pulse-hub::after,
 .sc4-pulse-site::after {
   content: '';
   position: absolute;
-  inset: -8px;
+  top: 50%;
+  left: 50%;
+  width: 15px;
+  /* 파동이 시작되는 초기 크기 */
+  height: 15px;
   border-radius: 50%;
-  border: 2px solid var(--gold);
-  animation: pulse-gold 2s infinite ease-out;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  /* 파동을 이미지 뒤로 보냄 */
 }
 
-@keyframes pulse-red {
+.sc4-pulse-hub::after {
+  border: 3px solid var(--red);
+  animation: pulse-img-red 2s infinite ease-out;
+}
+
+.sc4-pulse-site::after {
+  border: 3px solid var(--gold);
+  animation: pulse-img-gold 2s infinite ease-out;
+}
+
+@keyframes pulse-img-red {
   0% {
-    transform: scale(0.5);
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
 
   100% {
-    transform: scale(2.5);
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-img-gold {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(4);
     opacity: 0;
   }
 }
@@ -1223,6 +1509,130 @@ body,
   transform: translateY(0);
 }
 
+/* 🌟 섹션 4: 지도 마커 클릭 시 나타나는 다크 팝업 스타일 */
+.sc4-leaflet-popup .leaflet-popup-content-wrapper {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0;
+  backdrop-filter: blur(4px);
+}
+
+/* 팝업 말풍선 꼬리표 색상 통일 */
+.sc4-leaflet-popup .leaflet-popup-tip {
+  background: rgba(20, 20, 20, 0.95);
+}
+
+/* 팝업 내부 레이아웃 */
+.sc4-popup-inner {
+  padding: 1.5rem;
+  max-width: 280px;
+}
+
+.sc4-popup-inner h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.sc4-popup-inner .sc4-pop-addr {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.sc4-popup-inner .sc4-pop-desc {
+  font-size: 0.85rem;
+  color: rgba(238, 230, 216, 0.8);
+  line-height: 1.6;
+  max-height: 150px;
+  overflow-y: auto;
+  /* 내용이 길면 스크롤 생성 */
+  padding-right: 5px;
+}
+
+/* 팝업 내부 커스텀 스크롤바 */
+.sc4-popup-inner .sc4-pop-desc::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sc4-popup-inner .sc4-pop-desc::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+
+/* 🌟 섹션 4: 범례 필터 버튼 스타일 */
+.sc4-legend-list li {
+  cursor: pointer;
+  /* 마우스를 올리면 손가락 모양으로 변경 */
+  transition: all 0.3s ease;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: transparent;
+}
+
+.sc4-legend-list li:hover {
+  background: rgba(0, 0, 0, 0.05);
+  /* 호버 시 살짝 어두워짐 */
+}
+
+/* 필터가 꺼졌을 때(비활성화)의 스타일 */
+.sc4-legend-list li:not(.active) {
+  opacity: 0.4;
+  filter: grayscale(100%);
+}
+
+/* 🌟 섹션 4: 지도 전체 보기(초기화) 버튼 */
+.sc4-reset-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  background-color: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+
+  /* 초기 상태는 숨김 처리 */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+}
+
+.sc4-reset-btn:hover {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+.sc4-reset-btn span.material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+/* 줌인 되었을 때 나타나는 클래스 */
+.sc4-reset-btn.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
 
 
 /* =======================================================
@@ -1279,7 +1689,9 @@ body,
 
 /* 인물 카드 */
 .sc5-card {
-  flex: 0 0 180px;
+  /* 수정 전: flex: 0 0 180px; */
+  flex: 0 0 140px;
+  /* 카드의 전체 너비를 140px로 축소 */
   background: #1f1b12;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
@@ -1289,6 +1701,7 @@ body,
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* (hover 효과 코드는 그대로 유지) */
 .sc5-card:hover,
 .sc5-card.active {
   transform: translateY(-12px);
@@ -1298,7 +1711,9 @@ body,
 
 .sc5-card-img {
   width: 100%;
-  height: 120px;
+  /* 수정 전: height: 120px; */
+  height: 90px;
+  /* 사진 영역의 높이 축소 */
   background-color: #2a251c;
   overflow: hidden;
   display: flex;
@@ -1321,16 +1736,19 @@ body,
 }
 
 .sc5-card-info {
-  padding: 1rem;
+  /* 수정 전: padding: 1rem; */
+  padding: 0.7rem;
+  /* 내부 여백 축소 */
   text-align: center;
 }
 
 .sc5-card-info h4 {
   color: #fff;
   font-family: 'Noto Serif KR', serif;
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  /* 수정 전: font-size: 1rem; */
+  font-size: 0.9rem;
+  /* 이름 글자 크기 축소 */
+  margin-bottom: 0.3rem;
 }
 
 .sc5-card-info p {
@@ -1368,26 +1786,16 @@ body,
   line-height: 1;
 }
 
-/* 지도 위 핀 및 팝업 창 */
 .sc5-custom-pin {
-  width: 16px;
-  height: 16px;
-  background-color: var(--red);
-  border-radius: 50%;
-  border: 3px solid #fff;
-  box-shadow: 0 0 15px rgba(168, 50, 40, 0.8);
-  position: relative;
-}
-
-.sc5-custom-pin::after {
-  content: '';
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 30px;
-  background: linear-gradient(to bottom, var(--red), transparent);
+  width: 100%;
+  height: 100%;
+  background-image: url('../assets/images/marker_theme_100173_5.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .sc5-leaflet-popup .leaflet-popup-content-wrapper {
@@ -1452,6 +1860,161 @@ body,
 
 .sc5-reveal.active {
   opacity: 1;
+  transform: translateY(0);
+}
+
+/* 🌟 섹션 5: 검색 래퍼 및 토글 버튼 */
+.sc5-search-wrapper {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.sc5-search-toggle {
+  background: rgba(20, 20, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.9rem;
+  font-weight: bold;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.sc5-search-toggle:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+/* 확장 패널 */
+.sc5-search-panel {
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.2rem;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  /* 숨김 및 슬라이드 애니메이션 처리 */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-15px);
+  transition: all 0.3s ease;
+}
+
+.sc5-search-panel.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* 텍스트 입력창 */
+.sc5-search-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.sc5-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.sc5-search-input:focus {
+  border-color: var(--red);
+}
+
+/* 초성 필터 컨테이너 및 버튼 */
+.sc5-filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 300px;
+}
+
+.sc5-filter-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.sc5-filter-btn:hover {
+  background: rgba(168, 50, 40, 0.5);
+  color: #fff;
+}
+
+.sc5-filter-btn.active {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+
+.sc5-reset-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  background-color: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+
+  /* 초기 상태는 숨김 처리 */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+}
+
+.sc5-reset-btn:hover {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+.sc5-reset-btn span.material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+/* 줌인 되었을 때 나타나는 클래스 */
+.sc5-reset-btn.show {
+  opacity: 1;
+  visibility: visible;
   transform: translateY(0);
 }
 
