@@ -707,6 +707,9 @@ body,
 .sc2-map-inner {
   width: 100%;
   height: 100%;
+}
+
+#map-s2 .leaflet-tile-pane {
   filter: grayscale(100%) brightness(0.95);
 }
 
