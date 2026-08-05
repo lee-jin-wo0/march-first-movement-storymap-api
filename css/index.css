@@ -293,6 +293,66 @@ body,
   text-align: right;
 }
 
+/* =======================================================
+   공통: 우측 상단 일반/위성 지도 전환 버튼 디자인
+======================================================= */
+.custom-map-toggle {
+  background-color: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  margin-top: 1.5rem !important;
+  /* Leaflet 기본 여백 무시하고 고정 */
+  margin-right: 1.5rem !important;
+  gap: 0.4rem;
+}
+
+/* 비활성화된 글자 (어둡게) */
+.map-type-label {
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 400;
+  transition: all 0.3s ease;
+}
+
+/* 활성화된 글자 (밝고 굵게) */
+.map-type-label.active {
+  color: #ffffff;
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* 가운데 슬래시(/) 디자인 */
+.map-type-divider {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 0.8rem;
+}
+
+.custom-map-toggle:hover {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+.custom-map-toggle .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+/* 🌟 우측 상단에 지도 전환 버튼이 들어가므로 기존 '전체 보기' 버튼들을 조금 아래로 내립니다 */
+.sc2-reset-btn,
+.sc4-reset-btn,
+.sc5-reset-btn {
+  top: 5.5rem !important;
+}
 
 
 /* =======================================================
@@ -680,6 +740,93 @@ body,
   transform: translateY(0);
 }
 
+.sc1-leaflet-popup .leaflet-popup-content-wrapper {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0;
+  backdrop-filter: blur(4px);
+}
+
+.sc1-leaflet-popup .leaflet-popup-tip {
+  background: rgba(20, 20, 20, 0.95);
+}
+
+.sc1-popup-inner {
+  padding: 1.5rem;
+  max-width: 250px;
+}
+
+.sc1-popup-inner h3 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.sc1-popup-inner .sc1-pop-addr {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.sc1-popup-inner .sc1-pop-desc {
+  font-size: 0.85rem;
+  color: rgba(238, 230, 216, 0.8);
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.custom-marker-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-pulse {
+  width: 14px;
+  height: 14px;
+  background-color: var(--red);
+  /* 붉은색 점 */
+  border-radius: 50%;
+  position: relative;
+  box-shadow: 0 0 10px rgba(168, 50, 40, 0.8);
+}
+
+/* 마커 주변으로 퍼져나가는 파동(Pulse) 효과 */
+.map-pulse::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--red);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  animation: sc1-pulse-anim 2s infinite ease-out;
+}
+
+@keyframes sc1-pulse-anim {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    /* 4배까지 커지며 사라짐 */
+    opacity: 0;
+  }
+}
+
 
 
 /* =======================================================
@@ -875,6 +1022,146 @@ body,
   border-radius: 0.5rem;
   margin-bottom: 1.2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sc2-leaflet-popup .leaflet-popup-content-wrapper {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0;
+  backdrop-filter: blur(4px);
+}
+
+.sc2-leaflet-popup .leaflet-popup-tip {
+  background: rgba(20, 20, 20, 0.95);
+}
+
+.sc2-popup-inner {
+  padding: 1.2rem;
+  width: 280px;
+}
+
+.sc2-pop-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.2rem;
+  color: var(--gold);
+  margin-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.sc2-pop-info {
+  font-size: 0.75rem;
+  color: #a7a7a7;
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+.sc2-pop-info p {
+  margin-bottom: 0.2rem;
+}
+
+.sc2-pop-info strong {
+  color: #ffffff;
+  margin-right: 4px;
+}
+
+.sc2-pop-desc {
+  font-size: 0.85rem;
+  color: rgba(238, 230, 216, 0.8);
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+
+  /* 내용이 길 경우 3줄까지만 보여주고 말줄임표 처리 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 하단 2개 링크 버튼 */
+.sc2-pop-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.sc2-btn {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem 0;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.sc2-btn.history-btn {
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.sc2-btn.history-btn:hover {
+  background-color: var(--gold);
+  color: #000000;
+}
+
+.sc2-btn.map-btn {
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+.sc2-btn.map-btn:hover {
+  background-color: var(--red);
+  color: #ffffff;
+}
+
+.sc2-popup-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 0.4s ease;
+  pointer-events: auto;
+}
+
+.sc2-reset-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  background-color: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 0.85rem;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+
+  /* 초기 상태는 숨김 처리 */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+}
+
+.sc2-reset-btn:hover {
+  background-color: var(--red);
+  border-color: var(--red);
+}
+
+.sc2-reset-btn.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 /* 마커 펄스 애니메이션 */
@@ -1637,6 +1924,43 @@ body,
   transform: translateY(0);
 }
 
+.sc4-pop-btns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.sc4-btn {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem 0;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.sc4-btn.history-btn {
+  border: 1px solid var(--gold);
+  color: var(--gold);
+}
+
+.sc4-btn.history-btn:hover {
+  background-color: var(--gold);
+  color: #000000;
+}
+
+.sc4-btn.map-btn {
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+.sc4-btn.map-btn:hover {
+  background-color: var(--red);
+  color: #ffffff;
+}
+
 
 /* =======================================================
    Section 5: 독립의 별들 (지도 및 하단 인물 캐러셀)
@@ -2019,6 +2343,46 @@ body,
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+}
+
+.sc5-pop-btns {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.sc5-btn {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem 0;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  word-break: keep-all;
+  /* 버튼 내 글자가 이상하게 끊기지 않도록 설정 */
+}
+
+/* 밝은 배경에 맞춘 진회색(Charcoal) 버튼 */
+.sc5-btn.history-btn {
+  border: 1px solid var(--charcoal);
+  color: var(--charcoal);
+}
+
+.sc5-btn.history-btn:hover {
+  background-color: var(--charcoal);
+  color: #f5eddd;
+}
+
+.sc5-btn.map-btn {
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+.sc5-btn.map-btn:hover {
+  background-color: var(--red);
+  color: #ffffff;
 }
 
 
